@@ -1,64 +1,85 @@
-import React from 'react';
-import { Text, View } from 'react-native';
+import React,{Component, Profiler} from 'react'
+import {View} from 'react-native'
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import MaterialCommunityIcons from 'react-native-vector-icons';
-
-
-function Profile() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Profile!</Text>
-    </View>
-  );
-}
-
-function Notifications() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Notifications!</Text>
-    </View>
-  );
-}
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import Entypo from 'react-native-vector-icons/Entypo'
+import Fontisto from 'react-native-vector-icons/Fontisto'
+import Login from './Login';
+import Profile from './Profile';
+import Trending from './Trending';
+import SplashScreen from './SplashScreen';
+import InsertDelete from './InsertDelete';
 
 const Tab = createMaterialBottomTabNavigator();
 
-function MyTabs() {
-  return (
-    <Tab.Navigator
-      initialRouteName="Feed"
-      activeColor="#e91e63"
-      labelStyle={{ fontSize: 12 }}
-      style={{ backgroundColor: 'tomato' }}
-    >
-      <Tab.Screen
-        name="Notifications"
-        component={Notifications}
-        options={{
-          tabBarLabel: 'Updates',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="bell" color={color} size={26} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={Profile}
-        options={{
-          tabBarLabel: 'Profile',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="account" color={color} size={26} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
-  );
+const More = () => {
+  return(<View></View>)
 }
 
-function HomeScreen() {
-  return (
-      <MyTabs />
-  );
+const BuySell = () => {
+  return(<View></View>)
 }
 
 
-export default HomeScreen;
+export default class HomeScreen extends Component {
+  render()
+  {
+    return(
+      <Tab.Navigator 
+        initialRouteName='Login'
+        activeColor="#2ca7e0"
+        barStyle={{ backgroundColor: '#fff' }}> 
+        <Tab.Screen
+          name="Location"
+          component={Profile}
+          options={{
+            tabBarLabel: 'Location',
+            tabBarIcon: ({ color }) => (
+              <Entypo name="location-pin" color={color} size={26} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name='Trending'
+          component={Trending}
+          options={{
+            tabBarLabel: 'Trending',
+            tabBarIcon: ({ color }) => (
+              <Entypo name="flash" color={color} size={26} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name='More'
+          component={InsertDelete}
+          options={{
+            tabBarLabel: 'More',
+            tabBarIcon: ({ color }) => (
+              <Entypo name="menu" color={color} size={26} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name='BuySell'
+          component={BuySell}
+          options={{
+            tabBarLabel: 'Buy/Sell',
+            tabBarIcon: ({ color }) => (
+              <Entypo name="shopping-cart" color={color} size={26} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name='NearMe'
+          component={More}
+          options={{
+            tabBarLabel: 'Near Me',
+            tabBarIcon: ({ color }) => (
+              <Fontisto name="compass-alt" color={color} size={26} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    );
+  }
+}

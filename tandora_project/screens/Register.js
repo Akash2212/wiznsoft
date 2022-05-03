@@ -3,11 +3,12 @@ import {View,Text,StyleSheet,Image,TextInput,TouchableOpacity} from 'react-nativ
 import axios from 'axios'
 import AsyncStorage from "@react-native-community/async-storage";
 
-export default class Login extends Component {
+export default class Register extends Component {
 
     constructor(props){
         super(props);
         this.state = {
+            username: '',
             email: '',
             passw: '',
             button: true,
@@ -56,13 +57,16 @@ const _storeData = async (token,emailID,name) => {
 }
 
 const login = async () => {
+    if(this.state.username == '') {
+        alert('Enter valid user name')
+    }
     if(this.state.email == '') {
         alert('Enter valid email')
     }
     if(this.state.passw == '') {
         alert('Enter valid password')
     }
-    if(this.state.email != '' && this.state.passw != '') {
+    if(this.state.username != '' && this.state.email != '' && this.state.passw != '') {
         this.setState({button: false,buttonFade: true});
     const url = 'https://tandora.herokuapp.com';
     const requestConfig = {
@@ -71,13 +75,14 @@ const login = async () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({   
-            "identifier": this.state.email,
+            "username": this.state.username,
+            "email": this.state.email,
             "password": this.state.passw,
         }),
       };
 
       try {
-      const res = await fetch(`${url}/api/auth/local`, requestConfig).catch((e) => alert(e));
+      const res = await fetch(`${url}/api/auth/local/register`, requestConfig).catch((e) => alert(e));
       const json = await res.json();
       if(json.error) {
           alert(json.error.message)
@@ -102,7 +107,7 @@ const login = async () => {
             <View style={styles.container}>
                 <View style={{padding: 20, alignItems:'center',top:40}}>
                     <Image source={require('../Images/logo.jpeg')} style={{width:80,height:80}}/>
-                    <Text style={styles.loginText}>Log in to Tandora</Text>
+                    <Text style={styles.loginText}>Signup to Tandora</Text>
                     <Text style={{top:20,fontSize:18}}>Don't have an account?  <Text style={{color:'#007aff'}}>Sign Up</Text></Text>
                     <View style={{top: 60,flexDirection:'row'}}>
                         <View style={{flexDirection:'row',alignItems:'center'}}>
@@ -116,6 +121,12 @@ const login = async () => {
                     <Text style={{top: 80}}>OR</Text>
                 </View>
                 <View style={{top: 120,left: 30}}>
+
+                        <TextInput
+                            placeholder="Enter username"
+                            style={styles.username}
+                            onChangeText={(u) => this.setState({username: u})}
+                        />
                         
                         <TextInput
                            placeholder="Enter email"
@@ -137,12 +148,12 @@ const login = async () => {
                 }
                 {this.state.button &&
                     <TouchableOpacity onPress={() => login()} style={styles.button} >
-                        <Text style={styles.buttonText}>Login</Text>
+                        <Text style={styles.buttonText}>Signup</Text>
                     </TouchableOpacity>
                 }
                 
                 </View>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('Register')} style={{top:200}}><Text style={{color: '#007aff',textAlign:'center'}}>Don't have an account</Text></TouchableOpacity>
+                <TouchableOpacity style={{top:200}}><Text style={{color: '#007aff',textAlign:'center'}}>Don't have an account</Text></TouchableOpacity>
             </View>
         )
     }
@@ -159,18 +170,25 @@ const styles = StyleSheet.create({
         color: '#000',
         top: 10
     },
-    email: {
+    username: {
         color: '#000',
         width: '80%',
         backgroundColor:'#d6d6d4',
         top: 20,
         borderRadius: 10
     },
-    passw: {
+    email: {
         color: '#000',
         width: '80%',
         backgroundColor:'#d6d6d4',
         top: 30,
+        borderRadius: 10
+    },
+    passw: {
+        color: '#000',
+        width: '80%',
+        backgroundColor:'#d6d6d4',
+        top: 40,
         borderRadius: 10
     },
     button: {

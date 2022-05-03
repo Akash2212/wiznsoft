@@ -4,10 +4,34 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import Feather from 'react-native-vector-icons/Feather'
 import Entypo from 'react-native-vector-icons/Entypo'
 import LinearGradient from 'react-native-linear-gradient';
+import { FloatingAction } from "react-native-floating-action";
+import AsyncStorage from '@react-native-community/async-storage'
+
+const actions = [
+    {
+      text: "Tandora",
+      icon: require("../Images/logo.jpeg"),
+    },
+]
 
 export default class Trending extends Component 
 {
+
     render(){
+
+        const signout = async () => {
+            try {
+                await AsyncStorage.removeItem('user')
+                .then(() => this.props.navigation.replace('Login'));
+                console.log('Sign out')
+
+            }
+            catch(err) {
+                console.log(err)
+            }
+        }
+
+
         return(
             <View style={styles.container}>
                 <View style={{flexDirection:'row',justifyContent:'space-between',padding:15}}>
@@ -89,6 +113,23 @@ export default class Trending extends Component
                     </View>
                     <TouchableOpacity><Text>View all 120 comments</Text></TouchableOpacity>
                 </View>
+                <TouchableOpacity 
+                    onPress={() => signout()}
+                    style={{width: 60,  
+                        height: 60,   
+                        borderRadius: 30,            
+                        backgroundColor: '#fff',                                    
+                        position: 'absolute',                                          
+                        bottom: 10,                                                    
+                        right: 10, 
+                    }}
+                >
+                    <Image 
+                        source={require('../Images/logo.jpeg')}
+                        style={{width:50,height:50}}
+                        
+                    />
+                </TouchableOpacity>
             </View>
         )
     }
