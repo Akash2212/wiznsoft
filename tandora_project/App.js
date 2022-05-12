@@ -23,22 +23,28 @@ export default class App extends Component {
 */
 
 import React,{Component} from "react";
-import {View} from 'react-native'
+import {View,Linking} from 'react-native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from "./screens/SplashScreen";
 import Login from "./screens/Login";
 import Register from "./screens/Register";
 import HomeScreen from "./screens/HomeScreen";
+import Post from "./screens/Post";
 import Trending from './screens/Trending';
 import Profile from "./screens/Profile";
 import AsyncStorage from "@react-native-community/async-storage";
+import ResetPassw from "./screens/ResetPassw";
+import ForgotPassword from "./screens/ForgotPassword";
 
 const SPLASH_SCREEN = "Splash";
 const MAIN_SCREEN = "MainScreen";
 const NAVIGATION_SCREEN = "navigation";
+const FORGOT_SCREEN = "forgot";
 
 const Stack = createNativeStackNavigator();
+
+
 
 export default class App extends Component{
 
@@ -51,6 +57,17 @@ export default class App extends Component{
   }
 
   componentDidMount() {
+
+    Linking.getInitialURL().then(url => parseUrl(url));
+    Linking.addEventListener('url', url => parseUrl(url));
+    
+    const parseUrl = url => {
+      if (url) {
+        console.log(url);
+        this.setState({componentToRender: FORGOT_SCREEN})
+      }
+    }
+
     this.timeoutHandle = setTimeout(() => {
            
       const isLoggedIn = async () => {
@@ -82,6 +99,8 @@ export default class App extends Component{
 
   render(){
 
+  
+
     const { componentToRender } = this.state;
 
     if (componentToRender === NAVIGATION_SCREEN) {
@@ -89,8 +108,11 @@ export default class App extends Component{
         <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={Login}/>
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>
+        <Stack.Screen name="ResetPassw" component={ResetPassw}/>
         <Stack.Screen name="Register" component={Register}/>
         <Stack.Screen name="HomeScreen" component={HomeScreen}/>
+        <Stack.Screen name="Post" component={Post}/>
         <Stack.Screen name="Trending" component={Trending}/>
         </Stack.Navigator>
       </NavigationContainer>
@@ -105,6 +127,9 @@ export default class App extends Component{
         </Stack.Navigator>
       </NavigationContainer>
       )
+    }
+    if(componentToRender === FORGOT_SCREEN) {
+      return( <ForgotPassword/> );
     }
     return <SplashScreen/>
   }

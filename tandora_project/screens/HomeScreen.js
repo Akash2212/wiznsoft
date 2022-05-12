@@ -6,6 +6,7 @@ import Entypo from 'react-native-vector-icons/Entypo'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 import Login from './Login';
 import Profile from './Profile';
+import Post from './Post';
 import Trending from './Trending';
 import SplashScreen from './SplashScreen';
 import InsertDelete from './InsertDelete';
@@ -31,7 +32,7 @@ export default class HomeScreen extends Component {
         barStyle={{ backgroundColor: '#fff' }}> 
         <Tab.Screen
           name="Location"
-          component={Profile}
+          component={Post}
           options={{
             tabBarLabel: 'Location',
             tabBarIcon: ({ color }) => (

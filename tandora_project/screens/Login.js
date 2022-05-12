@@ -98,12 +98,29 @@ const login = async () => {
       
 }
 
+    const forgotPassw = async () => {
+        
+        this.props.navigation.navigate("ForgotPassword")
+        
+        /*
+        await axios.post('https://tandora.herokuapp.com/api/auth/forgot-password',{
+            email: 'akashrobo2@gmail.com'
+        })
+        .then((res) => {
+            console.log(res)
+            
+        })
+        .catch((e) => console.log(e))
+        */
+        
+    }
+
         return(
             <View style={styles.container}>
                 <View style={{padding: 20, alignItems:'center',top:40}}>
                     <Image source={require('../Images/logo.jpeg')} style={{width:80,height:80}}/>
                     <Text style={styles.loginText}>Log in to Tandora</Text>
-                    <Text style={{top:20,fontSize:18}}>Don't have an account?  <Text style={{color:'#007aff'}}>Sign Up</Text></Text>
+                    <View style={{flexDirection:'row'}}><Text style={{top:20,fontSize:18}}>Don't have an account? </Text><TouchableOpacity onPress={() => this.props.navigation.navigate('Register')}><Text style={{color:'#007aff',top:20,fontSize:18}}>Signup</Text></TouchableOpacity></View>
                     <View style={{top: 60,flexDirection:'row'}}>
                         <View style={{flexDirection:'row',alignItems:'center'}}>
                             <Image source={require('../Images/googleLogo.png')} style={{width: 30,height:30}}/>
@@ -142,7 +159,7 @@ const login = async () => {
                 }
                 
                 </View>
-                <TouchableOpacity onPress={() => this.props.navigation.navigate('Register')} style={{top:200}}><Text style={{color: '#007aff',textAlign:'center'}}>Don't have an account</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => forgotPassw()} style={{top:200}}><Text style={{color: '#007aff',textAlign:'center'}}>Forgot password</Text></TouchableOpacity>
             </View>
         )
     }

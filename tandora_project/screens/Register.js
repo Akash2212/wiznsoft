@@ -108,7 +108,7 @@ const login = async () => {
                 <View style={{padding: 20, alignItems:'center',top:40}}>
                     <Image source={require('../Images/logo.jpeg')} style={{width:80,height:80}}/>
                     <Text style={styles.loginText}>Signup to Tandora</Text>
-                    <Text style={{top:20,fontSize:18}}>Don't have an account?  <Text style={{color:'#007aff'}}>Sign Up</Text></Text>
+                    <View style={{flexDirection:'row'}}><Text style={{top:20,fontSize:18}}>Already have an account? </Text><TouchableOpacity onPress={() => this.props.navigation.navigate('Login')}><Text style={{color:'#007aff',top:20,fontSize:18}}>Login</Text></TouchableOpacity></View>
                     <View style={{top: 60,flexDirection:'row'}}>
                         <View style={{flexDirection:'row',alignItems:'center'}}>
                             <Image source={require('../Images/googleLogo.png')} style={{width: 30,height:30}}/>
@@ -153,7 +153,6 @@ const login = async () => {
                 }
                 
                 </View>
-                <TouchableOpacity style={{top:200}}><Text style={{color: '#007aff',textAlign:'center'}}>Don't have an account</Text></TouchableOpacity>
             </View>
         )
     }
