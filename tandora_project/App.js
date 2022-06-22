@@ -52,6 +52,7 @@ export default class App extends Component{
     super(props);
     this.state = {
       componentToRender: SPLASH_SCREEN,
+      url: ''
     };
     console.disableYellowBox = true;
   }
@@ -63,7 +64,8 @@ export default class App extends Component{
     
     const parseUrl = url => {
       if (url) {
-        console.log(url);
+        //console.log(url);
+        this.setState({url: url})
         this.setState({componentToRender: FORGOT_SCREEN})
       }
     }
@@ -129,7 +131,7 @@ export default class App extends Component{
       )
     }
     if(componentToRender === FORGOT_SCREEN) {
-      return( <ForgotPassword/> );
+      return( <ResetPassw url={this.state.url}/> );
     }
     return <SplashScreen/>
   }
