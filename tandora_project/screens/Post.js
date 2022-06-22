@@ -60,8 +60,8 @@ console.log(user.jwt)
                 uri: this.state.path,
                 });
     
-    
-    
+
+                if(this.state.path != '') {
                 await fetch(`https://tandora.herokuapp.com/api/upload`, {
                 method: 'POST',
                 headers: {
@@ -72,11 +72,16 @@ console.log(user.jwt)
                 .then(response => response.json())
                 .then(response => {
                     console.log('response', response);
+                    alert('Image posted successfully')
+                    this.setState({path: ''})
                 })
                 .catch(error => {
                     console.log('error', error);
                 });
-                
+            }
+            else {
+                alert('Insert image first')
+            }   
         }
 
 
@@ -85,13 +90,13 @@ console.log(user.jwt)
             <View style={styles.container}>
                 <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',padding:10}}>
                     <View style={{flexDirection:'row',alignItems:'center'}}>
-                        <TouchableOpacity>
+                        {/* <TouchableOpacity>
                             <Ionicons
                                 name="close-outline"
                                 size={35}
                                 color="#000"
-                            />
-                        </TouchableOpacity>
+                            /> 
+                        </TouchableOpacity> */}
                         <Text style={styles.newPost}>New Post</Text>
                     </View>
                     <View>

@@ -4,12 +4,15 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Entypo from 'react-native-vector-icons/Entypo'
 import Fontisto from 'react-native-vector-icons/Fontisto'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
+
 import Login from './Login';
 import Profile from './Profile';
 import Post from './Post';
 import Trending from './Trending';
 import SplashScreen from './SplashScreen';
 import InsertDelete from './InsertDelete';
+import MyPosts from './MyPosts';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -34,9 +37,9 @@ export default class HomeScreen extends Component {
           name="Location"
           component={Post}
           options={{
-            tabBarLabel: 'Location',
+            tabBarLabel: 'Add Posts',
             tabBarIcon: ({ color }) => (
-              <Entypo name="location-pin" color={color} size={26} />
+              <MaterialCommunityIcons name="publish" color={color} size={26} />
             ),
           }}
         />
@@ -52,31 +55,22 @@ export default class HomeScreen extends Component {
         />
         <Tab.Screen
           name='More'
-          component={InsertDelete}
+          component={MyPosts}
           options={{
-            tabBarLabel: 'More',
+            tabBarLabel: 'My Posts',
             tabBarIcon: ({ color }) => (
-              <Entypo name="menu" color={color} size={26} />
+              <FontAwesome name="photo" color={color} size={26} />
             ),
           }}
         />
+        
         <Tab.Screen
-          name='BuySell'
-          component={BuySell}
+          name='Profile'
+          component={Profile}
           options={{
-            tabBarLabel: 'Buy/Sell',
+            tabBarLabel: 'Profile',
             tabBarIcon: ({ color }) => (
-              <Entypo name="shopping-cart" color={color} size={26} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name='NearMe'
-          component={More}
-          options={{
-            tabBarLabel: 'Near Me',
-            tabBarIcon: ({ color }) => (
-              <Fontisto name="compass-alt" color={color} size={26} />
+              <FontAwesome name="user-circle-o" color={color} size={26} style={{right:3}}/>
             ),
           }}
         />
