@@ -45,7 +45,7 @@ const _storeData = async (token,emailID,name) => {
             username: name
         }
         await AsyncStorage.setItem('user',JSON.stringify(userCredentials))
-        .then(() => this.props.navigation.navigate('HomeScreen'));
+        .then(() => this.props.navigation.replace('HomeScreen'));
         
     }
     catch(err) {

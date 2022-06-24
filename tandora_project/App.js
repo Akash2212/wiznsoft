@@ -126,6 +126,7 @@ export default class App extends Component{
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="HomeScreen" component={HomeScreen}/>
           <Stack.Screen name="Trending" component={Trending}/>
+          <Stack.Screen name="Login" component={Login}/>
         </Stack.Navigator>
       </NavigationContainer>
       )
