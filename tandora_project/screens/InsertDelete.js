@@ -20,6 +20,7 @@ export default class InsertDelete extends Component
                 fetch('https://tandora.herokuapp.com/api/todos', {
                     method: 'POST',
                     headers: {
+                        'Authorization': `Bearer ${jwt}`,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({

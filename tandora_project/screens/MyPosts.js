@@ -17,10 +17,10 @@ export default class MyPosts extends Component {
 
     componentDidMount() {
 
-        const show = async () => {
 
-            let usrdata = await AsyncStorage.getItem('user');
-            let user = JSON.parse(usrdata);
+
+        const show = async () => {
+            /*           
 
             var urldata = [];
 
@@ -37,20 +37,52 @@ export default class MyPosts extends Component {
             this.state.data.push(urldata)
             this.setState({dataurl: this.state.data})
         }
-        show();
+
+        */
+
+
+        let usrdata = await AsyncStorage.getItem('user');
+        let user = JSON.parse(usrdata);
+
+        await axios.get('https://tandora.herokuapp.com/api/posts',{
+            headers: {
+                "Authorization": `Bearer ${user.jwt}`
+            }
+        })
+        .then((res) => {
+            //console.log(res.data.data)
+            this.setState({data: res.data.data})
+        })
+        .catch((e) => console.log(e))
 
     }
+    show();
 
-    
+   
+
+
+}
+
 
     render() {
 
-        const Item = ({ url }) => (
+
+        const Item = ({ url,desc,time,date }) => (
+            
             <View style={{padding:5}}>
-                <Image
-                    source={{uri: url}}
-                    style={{width:Dimensions.get('window').width,height:200}}
-                />
+                <TouchableOpacity>
+                    <Image
+                        source={{uri: "https://tandora.herokuapp.com"+url}}
+                        style={{width:Dimensions.get('window').width,height:200}}
+                    />
+               </TouchableOpacity>
+               <View style={{height:50,justifyContent:'center',margin:10}}>
+                    <Text style={styles.desc}>{desc}</Text>
+                    <View style={{flexDirection:'row',justifyContent:'space-between',top:5,bottom:5}}>
+                        <Text style={styles.date}>{date}</Text>
+                        <Text style={styles.time}>{time}</Text>
+                    </View>
+               </View>
             </View>
           );
 
@@ -58,14 +90,16 @@ export default class MyPosts extends Component {
         const renderItem = ({ item }) => {
             return(
                 <Item
-                    url={item.title}
+                    url={item.attributes.imageURL}
+                    desc={item.attributes.description}
+                    time={item.attributes.time}
+                    date={item.attributes.date}
                 />
             );
             
             
           };
-
-          console.log(this.state.dataurl[0])
+         
 
         return(
             <View style={styles.container}>
@@ -73,9 +107,10 @@ export default class MyPosts extends Component {
                     <Text style={{color:'#fff',fontWeight:'800',fontSize:20,left:20}}>My Posts</Text>
                 </View>
                 <FlatList
-                    data={this.state.dataurl[0]}
+                    data={this.state.data}
                     renderItem={renderItem}
                 />
+                
             </View>
         );
     }
@@ -88,4 +123,9 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center'
     },
+    desc: {
+        fontSize:17,
+        fontWeight: '700',
+        color: '#000'
+    }
 });

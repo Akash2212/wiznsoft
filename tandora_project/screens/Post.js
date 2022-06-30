@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import {View,Text,StyleSheet,TouchableOpacity,Image} from 'react-native';
+import {View,Text,StyleSheet,TouchableOpacity,Image,TextInput} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import AsyncStorage from "@react-native-community/async-storage";
@@ -11,6 +11,7 @@ export default class Post extends Component {
         this.state = {
             mime: '',
             path: '',
+            desc: ''
         }
     }
 
@@ -33,6 +34,7 @@ export default class Post extends Component {
 
         const makePost = async () => {
 
+
             /*
             
 
@@ -47,9 +49,8 @@ export default class Post extends Component {
             })
             .catch((e) => console.log(e))
 */
-let data = await AsyncStorage.getItem('user');
-let user = JSON.parse(data);
-console.log(user.jwt)
+            let data = await AsyncStorage.getItem('user');
+            let user = JSON.parse(data);
             
             const formData = new FormData();
 
@@ -62,26 +63,58 @@ console.log(user.jwt)
     
 
                 if(this.state.path != '') {
-                await fetch(`https://tandora.herokuapp.com/api/upload`, {
-                method: 'POST',
-                headers: {
-                    Authorization: `Bearer ${user.jwt}`
-                },
-                body: formData,
-            })
-                .then(response => response.json())
-                .then(response => {
-                    console.log('response', response);
-                    alert('Image posted successfully')
-                    this.setState({path: ''})
-                })
-                .catch(error => {
-                    console.log('error', error);
-                });
-            }
-            else {
-                alert('Insert image first')
-            }   
+
+
+                    
+
+
+
+                    await fetch(`https://tandora.herokuapp.com/api/upload`, {
+                    method: 'POST',
+                    headers: {
+                        Authorization: `Bearer ${user.jwt}`
+                    },
+                    body: formData,
+                    })
+                    .then(response => response.json())
+                    .then(response => {
+                        console.log(response[0].url);
+                        alert('Image posted successfully')
+                        this.setState({path: ''})
+
+                    
+                        fetch('https://tandora.herokuapp.com/api/posts',{
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${user.jwt}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            "data": {
+                                "description": this.state.desc,
+                                "imageURL": response[0].url,
+                                "time": new Date().toLocaleTimeString(),
+                                "date": new Date().toLocaleDateString()
+                            }
+                           
+                        })
+                    })
+                    .then((res) => {
+                        console.log("Post datas added",res)
+                        this.textInput.clear();
+                    })
+                    .catch((e) => console.log(e))
+
+
+
+                    })
+                    .catch(error => {
+                        console.log('error', error);
+                    });
+                }
+                else {
+                    alert('Insert image first')
+                }   
         }
 
 
@@ -112,7 +145,7 @@ console.log(user.jwt)
                     />
                     <Text style={styles.username}>Ravi Kumar</Text>
                 </View>
-                <View style={{top:100,justifyContent: 'center',alignItems:'center'}}> 
+                <View style={{top:10,justifyContent: 'center',alignItems:'center'}}> 
                     <TouchableOpacity onPress={() => this.addImage()} style={styles.addButton}>
                         <AntDesign
                             name="plus"
@@ -125,6 +158,18 @@ console.log(user.jwt)
                         <Image 
                             source={{uri: this.state.path == ''? 'https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640': this.state.path}}
                             style={{width: 300,height:190}}
+                        />
+                    </View>
+                    <View style={{width:'100%',top:40}}>
+                        <TextInput
+                            style={{ left: 25,fontSize:17,width:'85%' }} 
+                            placeholder="Description"
+                            multiline={true}
+                            editable={true}
+                            maxHeight={150}
+                            maxLength={100}
+                            ref={input => { this.textInput = input }}
+                            onChangeText={(e) => this.setState({desc: e})}
                         />
                     </View>
                 </View>
