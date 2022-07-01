@@ -73,7 +73,7 @@ export default class MyPosts extends Component {
                 <TouchableOpacity>
                     <Image
                         source={{uri: "https://tandora.herokuapp.com"+url}}
-                        style={{width:Dimensions.get('window').width,height:200}}
+                        style={{width:Dimensions.get('window').width,height:200,resizeMode:'contain'}}
                     />
                </TouchableOpacity>
                <View style={{height:50,justifyContent:'center',margin:10}}>

@@ -4,6 +4,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import AsyncStorage from "@react-native-community/async-storage";
 import ImagePicker from 'react-native-image-crop-picker';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 export default class Post extends Component {
     constructor(props) {
@@ -11,7 +12,9 @@ export default class Post extends Component {
         this.state = {
             mime: '',
             path: '',
-            desc: ''
+            desc: '',
+            jwt: '',
+            username: ''
         }
     }
 
@@ -27,9 +30,26 @@ export default class Post extends Component {
           });
           
     }
+
     
 
+    componentDidMount() {
+
+        const getUser = async () => {
+
+            let usrdata = await AsyncStorage.getItem('user');
+            let user = JSON.parse(usrdata);
+            this.setState({username: user.username, jwt: user.jwt});
+
+        }
+
+        getUser()
+    }
+
+
     render() {
+
+       
 
 
         const makePost = async () => {
@@ -49,8 +69,7 @@ export default class Post extends Component {
             })
             .catch((e) => console.log(e))
 */
-            let data = await AsyncStorage.getItem('user');
-            let user = JSON.parse(data);
+
             
             const formData = new FormData();
 
@@ -72,7 +91,7 @@ export default class Post extends Component {
                     await fetch(`https://tandora.herokuapp.com/api/upload`, {
                     method: 'POST',
                     headers: {
-                        Authorization: `Bearer ${user.jwt}`
+                        Authorization: `Bearer ${this.state.jwt}`
                     },
                     body: formData,
                     })
@@ -86,7 +105,7 @@ export default class Post extends Component {
                         fetch('https://tandora.herokuapp.com/api/posts',{
                         method: 'POST',
                         headers: {
-                            'Authorization': `Bearer ${user.jwt}`,
+                            'Authorization': `Bearer ${this.state.jwt}`,
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
@@ -143,7 +162,7 @@ export default class Post extends Component {
                         source = {require("../Images/user1.jpg")}
                         style={styles.userImage}
                     />
-                    <Text style={styles.username}>Ravi Kumar</Text>
+                    <Text style={styles.username}>{this.state.username}</Text>
                 </View>
                 <View style={{top:10,justifyContent: 'center',alignItems:'center'}}> 
                     <TouchableOpacity onPress={() => this.addImage()} style={styles.addButton}>
@@ -155,6 +174,7 @@ export default class Post extends Component {
                         <Text style={{color: '#0a79ed',fontSize:17,fontWeight:'700'}}>Add</Text>
                     </TouchableOpacity>
                     <View style={styles.uplaodedImage}>
+                        
                         <Image 
                             source={{uri: this.state.path == ''? 'https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640': this.state.path}}
                             style={{width: 300,height:190}}
