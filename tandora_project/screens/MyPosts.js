@@ -50,8 +50,15 @@ export default class MyPosts extends Component {
             }
         })
         .then((res) => {
-            //console.log(res.data.data)
-            this.setState({data: res.data.data})
+            var urls = []
+            //console.log(res.data.data[3].attributes.username)
+            for(var i=0;i<res.data.data.length;i++) {
+                if(res.data.data[i].attributes.username == user.username){
+                    urls.push({url: res.data.data[i].attributes.imageURL,desc:res.data.data[i].attributes.description,date:res.data.data[i].attributes.date,time:res.data.data[i].attributes.time})
+                }
+            }
+            this.setState({data: urls})
+            console.log(this.state.data)
         })
         .catch((e) => console.log(e))
 
@@ -90,10 +97,10 @@ export default class MyPosts extends Component {
         const renderItem = ({ item }) => {
             return(
                 <Item
-                    url={item.attributes.imageURL}
-                    desc={item.attributes.description}
-                    time={item.attributes.time}
-                    date={item.attributes.date}
+                    url={item.url}
+                    desc={item.desc}
+                    time={item.time}
+                    date={item.date}
                 />
             );
             

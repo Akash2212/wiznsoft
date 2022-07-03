@@ -6,6 +6,7 @@ import Feather from 'react-native-vector-icons/Feather'
 import Entypo from 'react-native-vector-icons/Entypo'
 import AsyncStorage from '@react-native-community/async-storage'
 import ImagePicker from 'react-native-image-crop-picker'
+import axios from 'axios'
 
 
 export default class Profile extends Component
@@ -14,12 +15,16 @@ export default class Profile extends Component
     constructor(props) {
         super(props);
         this.state = {
+            id: null,
             username: '',
             jwt: '',
             mime: '',
             path: '',
-            profile: false,
-            edit: true,
+            url: '',
+            profile: true,
+            edit: false,
+            button: true,
+            buttonFade: false
         }
     }
 
@@ -43,9 +48,26 @@ export default class Profile extends Component
             let user = JSON.parse(usrdata);
             this.setState({username: user.username, jwt: user.jwt});
 
+            await axios.get('https://tandora.herokuapp.com/api/profiles',{
+                headers: {
+                    'Authorization': `Bearer ${user.jwt}`,
+                },
+            })
+            .then((res) => {
+                if(res.data.data.length != 0) {
+                    console.log(res.data.data[0])
+                for(var i=0;i<res.data.data.length;i++) {
+                    if(res.data.data[i].attributes.username == user.username){
+                        this.setState({url: res.data.data[i].attributes.url, id: res.data.data[i].id})
+                    }
+                }
+            }
+            })
+            .catch((e) => console.log(e))
         }
 
         getUser()
+        
     }
 
 
@@ -57,6 +79,7 @@ export default class Profile extends Component
         
         const makePost = async () => {
 
+            this.setState({buttonFade: true,button:false});
 
             /*
             
@@ -101,11 +124,11 @@ export default class Profile extends Component
                     .then(response => response.json())
                     .then(response => {
                         console.log(response[0].url);
-                        alert('Image posted successfully')
                         this.setState({path: ''})
 
-                    
-                        fetch('https://tandora.herokuapp.com/api/posts',{
+                        if(this.state.url == '') {
+
+                        fetch('https://tandora.herokuapp.com/api/profiles',{
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${this.state.jwt}`,
@@ -113,20 +136,51 @@ export default class Profile extends Component
                         },
                         body: JSON.stringify({
                             "data": {
-                                "description": this.state.desc,
-                                "imageURL": response[0].url,
-                                "time": new Date().toLocaleTimeString(),
-                                "date": new Date().toLocaleDateString()
+                                "username": this.state.username,
+                                "url": "https://tandora.herokuapp.com"+response[0].url,
                             }
                            
                         })
                     })
                     .then((res) => {
-                        console.log("Post datas added",res)
-                        this.textInput.clear();
+                        console.log("Profile uploaded successfully",res)
+                        alert('Profile uploaded successfully')
+                        this.setState({edit: false,profile: true});
                     })
-                    .catch((e) => console.log(e))
+                    .catch((e) => {
+                        console.log(e)
+                        this.setState({buttonFade: false,button:true});
+                    })
 
+                    }
+
+                    else {
+                        if(this.state.id != null) {
+                        fetch(`https://tandora.herokuapp.com/api/profiles/${this.state.id}`,{
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${this.state.jwt}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            "data": {
+                                "username": this.state.username,
+                                "url": "https://tandora.herokuapp.com"+response[0].url,
+                            }
+                           
+                        })
+                    })
+                    .then((res) => {
+                        console.log("Profile uploaded successfully",res)
+                        alert('Profile uploaded successfully')
+                        this.setState({edit: false,profile: true});
+                    })
+                    .catch((e) => {
+                        console.log(e)
+                        this.setState({buttonFade: false,button:true});
+                    })
+                    }
+                    }
 
 
                     })
@@ -136,6 +190,7 @@ export default class Profile extends Component
                 }
                 else {
                     alert('Insert image first')
+                    this.setState({button:true,buttonFade: false})
                 }   
         }
 
@@ -184,8 +239,8 @@ export default class Profile extends Component
                     
                         <View>
                             <Image
-                                source={require('../Images/user_placeholder.png')}
-                                style={{borderRadius:30,width:60,height:60}}
+                                source={{uri: this.state.url == ''? 'https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640': this.state.url}}
+                                style={{borderRadius:30,width:60,height:60,resizeMode:'contain'}}
                             />
                             <TouchableOpacity style={{width:30,height:30,bottom:20,left:40,borderRadius:25,backgroundColor:'#afcddb',justifyContent:'center',alignItems:'center'}}>
                                 <Entypo
@@ -199,17 +254,17 @@ export default class Profile extends Component
                             <Text style={{fontWeight:'600',color:'#000',fontSize:20}}>{this.state.username}</Text>
                             <Text></Text>
                         </View>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('UploadProfile')} style={styles.edit}>
+                        <TouchableOpacity onPress={() => this.setState({edit:true,profile:false})} style={styles.edit}>
                             <Text style={{color:'#2ca7e0'}}>Edit</Text>
                         </TouchableOpacity>
                 </View>
                 <View style={{padding:10,flexDirection:'row'}}>
                     <View>
-                        <Text style={{fontWeight:'600',color:'#000',fontSize:17}}>55</Text>
+                        <Text style={{fontWeight:'600',color:'#000',fontSize:17}}>0</Text>
                         <Text>Post</Text>
                     </View>
                     <View style={{left:30}}>
-                        <Text style={{fontWeight:'600',color:'#000',fontSize:17}}>100</Text>
+                        <Text style={{fontWeight:'600',color:'#000',fontSize:17}}>0</Text>
                         <Text>Connects</Text>
                     </View>
                     <View style={styles.connects}>
@@ -229,7 +284,7 @@ export default class Profile extends Component
                 <View style={styles.container}>
                      <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',padding:10}}>
                     <View style={{flexDirection:'row',alignItems:'center'}}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={() => this.setState({edit:false,profile:true})}>
                             <Ionicons
                                 name="close-outline"
                                 size={35}
@@ -258,6 +313,7 @@ export default class Profile extends Component
                             </TouchableOpacity>
                 </View>
                 <View style={{justifyContent:'center',width:'100%',alignItems:'center',top:150}}>
+                    {this.state.button &&
                     <TouchableOpacity onPress={() => makePost()} style={styles.button}>
                         <Entypo
                             name="check"
@@ -265,6 +321,16 @@ export default class Profile extends Component
                             color="#fff"
                         />
                     </TouchableOpacity>
+                    }
+                    {this.state.buttonFade &&
+                    <View style={styles.buttonFade}>
+                    <Entypo
+                        name="check"
+                        size={40}
+                        color="#fff"
+                    />
+                </View>
+                    }
                 </View>
                 </View>
             }
@@ -308,6 +374,14 @@ const styles = StyleSheet.create({
         width:"60%",
         height:50,
         backgroundColor:'#2ca7e0',
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    buttonFade: {
+        padding:5,
+        width:"60%",
+        height:50,
+        backgroundColor:'#599feb',
         justifyContent:'center',
         alignItems:'center'
     }

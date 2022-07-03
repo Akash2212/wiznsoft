@@ -5,6 +5,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import AsyncStorage from "@react-native-community/async-storage";
 import ImagePicker from 'react-native-image-crop-picker';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import axios from 'axios';
 
 export default class Post extends Component {
     constructor(props) {
@@ -14,7 +15,8 @@ export default class Post extends Component {
             path: '',
             desc: '',
             jwt: '',
-            username: ''
+            username: '',
+            url: ''
         }
     }
 
@@ -40,6 +42,23 @@ export default class Post extends Component {
             let usrdata = await AsyncStorage.getItem('user');
             let user = JSON.parse(usrdata);
             this.setState({username: user.username, jwt: user.jwt});
+
+            await axios.get('https://tandora.herokuapp.com/api/profiles',{
+                headers: {
+                    'Authorization': `Bearer ${user.jwt}`,
+                },
+            })
+            .then((res) => {
+                if(res.data.data.length != 0) {
+                    console.log(res.data.data[0].attributes.username)
+                for(var i=0;i<res.data.data.length;i++) {
+                    if(res.data.data[i].attributes.username == user.username){
+                        this.setState({url: res.data.data[i].attributes.url})
+                    }
+                }
+            }
+            })
+            .catch((e) => console.log(e))
 
         }
 
@@ -113,7 +132,8 @@ export default class Post extends Component {
                                 "description": this.state.desc,
                                 "imageURL": response[0].url,
                                 "time": new Date().toLocaleTimeString(),
-                                "date": new Date().toLocaleDateString()
+                                "date": new Date().toLocaleDateString(),
+                                "username": this.state.username
                             }
                            
                         })
@@ -159,7 +179,7 @@ export default class Post extends Component {
                 </View>
                 <View style={{flexDirection:'row',alignItems:'center',left:20}}>
                     <Image
-                        source = {require("../Images/user1.jpg")}
+                        source = {{uri: this.state.url == ''? 'https://www.pngitem.com/middle/hhmRJo_profile-icon-png-image-free-download-searchpng-employee/': this.state.url}}
                         style={styles.userImage}
                     />
                     <Text style={styles.username}>{this.state.username}</Text>
@@ -200,7 +220,8 @@ export default class Post extends Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex:1
+        flex:1,
+        backgroundColor:'#fff'
     },
     newPost: {
         fontSize: 17,
@@ -217,7 +238,7 @@ const styles = StyleSheet.create({
     userImage: {
         borderRadius: 30,
         height: 50,
-        width: 50
+        width: 50,
     },
     username: {
         left: 20,
