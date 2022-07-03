@@ -179,7 +179,7 @@ export default class Post extends Component {
                 </View>
                 <View style={{flexDirection:'row',alignItems:'center',left:20}}>
                     <Image
-                        source = {{uri: this.state.url == ''? 'https://www.pngitem.com/middle/hhmRJo_profile-icon-png-image-free-download-searchpng-employee/': this.state.url}}
+                        source={this.state.url == '' ? require('../Images/user_placeholder.png') : {uri: this.state.url}}
                         style={styles.userImage}
                     />
                     <Text style={styles.username}>{this.state.username}</Text>

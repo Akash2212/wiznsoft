@@ -239,7 +239,7 @@ export default class Profile extends Component
                     
                         <View>
                             <Image
-                                source={{uri: this.state.url == ''? 'https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640': this.state.url}}
+                                source={this.state.url == '' ? require('../Images/user_placeholder.png') : {uri: this.state.url}}
                                 style={{borderRadius:30,width:60,height:60,resizeMode:'contain'}}
                             />
                             <TouchableOpacity style={{width:30,height:30,bottom:20,left:40,borderRadius:25,backgroundColor:'#afcddb',justifyContent:'center',alignItems:'center'}}>
@@ -301,7 +301,7 @@ export default class Profile extends Component
                 </View>
                 <View style={{justifyContent:'center',alignItems:'center',top:100}}>
                             <Image
-                                source={{uri: this.state.path == ''? 'https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640': this.state.path}}
+                                source={this.state.path == '' ? require('../Images/user_placeholder.png') : {uri:this.state.path}}
                                 style={{borderRadius:30,width:100,height:100}}
                             />
                             <TouchableOpacity onPress={() => this.addImage()} style={{width:30,height:30,bottom:20,left:40,borderRadius:25,backgroundColor:'#afcddb',justifyContent:'center',alignItems:'center'}}>
