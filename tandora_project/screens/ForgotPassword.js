@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import { View,Text,TouchableOpacity,StyleSheet,Image, TextInput } from 'react-native';
+import { View,Text,TouchableOpacity,StyleSheet,Image, TextInput,BackHandler,Alert } from 'react-native';
 import axios from 'axios';
 
 export default class ForgotPassword extends Component {
@@ -24,7 +24,7 @@ export default class ForgotPassword extends Component {
                 })
                 .then((res) => {
                     console.log(res)
-                    this.setState({emailSent: true});
+                    this.setState({emailSent: true});                    
                 })
                 .catch((e) => {
                     console.log(e)

@@ -92,14 +92,17 @@ const login = async () => {
       else {
         console.log(json)
         _storeData(json.jwt,json.user.email,json.user.username);
-        await fetch('https://tandora.herokuapp.com/api/email/sendwelcome',{
+        await fetch('https://tandora.herokuapp.com/api/appusers',{
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${json.jwt}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                "to": "akashrobo2@gmail.com"
+                "data": {
+                    "username": this.state.username,
+                    "email": this.state.email,
+                }
             })
         })
         .then((res) => console.log(res))

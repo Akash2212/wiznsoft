@@ -1,11 +1,12 @@
 import React,{Component} from 'react'
-import {View,Text,TouchableOpacity,Image,StyleSheet} from 'react-native'
+import {View,Text,TouchableOpacity,Image,StyleSheet,FlatList,Dimensions} from 'react-native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import EvilIcons from 'react-native-vector-icons/EvilIcons'
 import Feather from 'react-native-vector-icons/Feather'
 import Entypo from 'react-native-vector-icons/Entypo'
 import AsyncStorage from '@react-native-community/async-storage'
 import ImagePicker from 'react-native-image-crop-picker'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import axios from 'axios'
 
 
@@ -24,7 +25,9 @@ export default class Profile extends Component
             profile: true,
             edit: false,
             button: true,
-            buttonFade: false
+            buttonFade: false,
+            data: [],
+            dataurl: [],
         }
     }
 
@@ -42,6 +45,59 @@ export default class Profile extends Component
     }
 
     componentDidMount() {
+
+
+        const show = async () => {
+            /*           
+
+            var urldata = [];
+
+            await axios.get('https://tandora.herokuapp.com/api/upload/files/')
+            .then(res => {
+                for(let i=res.data.length-1;i>=0;i--) {
+                    urldata.push({title:"https://tandora.herokuapp.com"+res.data[i].url})
+                   // urldata['title'] = "https://tandora.herokuapp.com"+res.data[i].url;
+                    
+                }
+                //console.log(res.data[0].url)
+            })
+            .catch((e) => console.log(e))
+            this.state.data.push(urldata)
+            this.setState({dataurl: this.state.data})
+        }
+
+        */
+
+
+        let usrdata = await AsyncStorage.getItem('user');
+        let user = JSON.parse(usrdata);
+
+        await axios.get('https://tandora.herokuapp.com/api/posts',{
+            headers: {
+                "Authorization": `Bearer ${user.jwt}`
+            }
+        })
+        .then((res) => {
+            var urls = []
+            //console.log(res.data.data[3].attributes.username)
+            for(var i=0;i<res.data.data.length;i++) {
+                if(res.data.data[i].attributes.username == user.username){
+                    urls.push({url: res.data.data[i].attributes.imageURL,desc:res.data.data[i].attributes.description,date:res.data.data[i].attributes.date,time:res.data.data[i].attributes.time})
+                }
+            }
+            this.setState({data: urls})
+            console.log(this.state.data)
+        })
+        .catch((e) => console.log(e))
+
+    }
+    show();
+
+   
+
+
+
+
         const getUser = async () => {
 
             let usrdata = await AsyncStorage.getItem('user');
@@ -196,9 +252,54 @@ export default class Profile extends Component
 
 
 
+        const signout = async () => {
+            console.log("In sign")
+            try {
+                await AsyncStorage.removeItem('user')
+                .then(() => this.props.navigation.replace('Login'));
+                console.log('Sign out')
+
+            }
+            catch(err) {
+                console.log(err)
+            }
+        }
 
 
+        
+        const Item = ({ url,desc,time,date }) => (
+            
+            <View style={{padding:5}}>
+                <TouchableOpacity>
+                    <Image
+                        source={{uri: "https://tandora.herokuapp.com"+url}}
+                        style={{width:Dimensions.get('window').width,height:200,resizeMode:'contain'}}
+                    />
+               </TouchableOpacity>
+               <View style={{height:50,justifyContent:'center',margin:10}}>
+                    <Text style={styles.desc}>{desc}</Text>
+                    <View style={{flexDirection:'row',justifyContent:'space-between',top:5,bottom:5}}>
+                        <Text style={styles.date}>{date}</Text>
+                        <Text style={styles.time}>{time}</Text>
+                    </View>
+               </View>
+            </View>
+          );
 
+
+        const renderItem = ({ item }) => {
+            return(
+                <Item
+                    url={item.url}
+                    desc={item.desc}
+                    time={item.time}
+                    date={item.date}
+                />
+            );
+            
+            
+          };
+         
 
 
 
@@ -206,7 +307,7 @@ export default class Profile extends Component
         return(
             <View style={styles.container}>
                 { this.state.profile &&
-                <View>
+                <View style={{flex:1}}>
                 <View style={{flexDirection:'row',padding:10,justifyContent:'space-between'}}>
                     <View style={{flexDirection:'row',alignItems:'center'}}>
                     <TouchableOpacity>
@@ -219,6 +320,13 @@ export default class Profile extends Component
                     <Text style={{left:10,fontSize:20}}>Profile</Text>
                     </View>
                     <View style={{flexDirection:'row',alignItems:'center'}}>
+                        <TouchableOpacity onPress={() => signout()}>
+                             <MaterialIcons
+                                name="logout"
+                                size={32}
+                                style={{right:40}}
+                            />
+                        </TouchableOpacity>
                         <TouchableOpacity>
                             <EvilIcons
                                 name="search"
@@ -276,7 +384,19 @@ export default class Profile extends Component
                         color="#2ca7e0"
                         style={{position:'absolute',right:20,top:20}}
                     />
-                  </View>
+                </View>
+                <View style={{top:30,flex:0.9}}>
+                 <View style={{height:50,backgroundColor:'#2ca7e0',width:'100%',justifyContent:'center'}}>
+                    <Text style={{color:'#fff',fontWeight:'800',fontSize:20,left:20}}>My Posts</Text>
+                </View> 
+                
+                <FlatList
+                    data={this.state.data}
+                    renderItem={renderItem}
+                />
+                
+                </View>
+
                 </View>
             }
 

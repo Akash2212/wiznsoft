@@ -62,38 +62,42 @@ export default class App extends Component{
 
   componentDidMount() {
 
-    Linking.getInitialURL().then(url => parseUrl(url));
+    Linking.getInitialURL().then(url => {
+      parseUrl(url)
+    });
     Linking.addEventListener('url', url => parseUrl(url));
     
     const parseUrl = url => {
       if (url) {
-        //console.log(url);
         this.setState({url: url})
         this.setState({componentToRender: FORGOT_SCREEN})
       }
+      else{
+        this.timeoutHandle = setTimeout(() => {
+           
+          const isLoggedIn = async () => {
+            let data = await AsyncStorage.getItem('user');
+            let user = JSON.parse(data);
+            console.log(user)
+            if(user != null) {
+              this.setState({
+                componentToRender: MAIN_SCREEN,
+              });
+            }
+            else {
+              this.setState({
+                componentToRender: NAVIGATION_SCREEN,
+              });
+            }
+          }
+          isLoggedIn();
+            
+    
+        }, 2000);
+      }
     }
 
-    this.timeoutHandle = setTimeout(() => {
-           
-      const isLoggedIn = async () => {
-        let data = await AsyncStorage.getItem('user');
-        let user = JSON.parse(data);
-        console.log(user)
-        if(user != null) {
-          this.setState({
-            componentToRender: MAIN_SCREEN,
-          });
-        }
-        else {
-          this.setState({
-            componentToRender: NAVIGATION_SCREEN,
-          });
-        }
-      }
-      isLoggedIn();
-        
-
-    }, 2000);
+    
   }
 
   componentWillUnmount() {
@@ -134,12 +138,29 @@ export default class App extends Component{
           <Stack.Screen name="HomeScreen" component={HomeScreen}/>
           <Stack.Screen name="Trending" component={Trending}/>
           <Stack.Screen name="Login" component={Login}/>
+          <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>
+          <Stack.Screen name="ResetPassw" component={ResetPassw}/>
+          <Stack.Screen name="Register" component={Register}/>
         </Stack.Navigator>
       </NavigationContainer>
       )
     }
     if(componentToRender === FORGOT_SCREEN) {
-      return( <ResetPassw url={this.state.url}/> );
+      console.log(this.state.url)
+
+      return(
+      //    <NavigationContainer>
+      //    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      //    <Stack.Screen name="Login" component={Login}/>
+      //      <Stack.Screen name="ResetPassw" component={() => <ResetPassw url={this.state.url}/>}/>
+           
+      //      <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>
+      //      <Stack.Screen name="Register" component={Register}/>
+      //      <Stack.Screen name="HomeScreen" component={HomeScreen}/>
+      //    </Stack.Navigator>
+      //  </NavigationContainer>
+          <ResetPassw url={this.state.url}/>
+          );
     }
     return <SplashScreen/>
   }

@@ -43,26 +43,7 @@ export default class HomeScreen extends Component {
             ),
           }}
         />
-        <Tab.Screen
-          name='Trending'
-          component={Trending}
-          options={{
-            tabBarLabel: 'Trending',
-            tabBarIcon: ({ color }) => (
-              <Entypo name="flash" color={color} size={26} />
-            ),
-          }}
-        />
-        <Tab.Screen
-          name='More'
-          component={MyPosts}
-          options={{
-            tabBarLabel: 'My Posts',
-            tabBarIcon: ({ color }) => (
-              <FontAwesome name="photo" color={color} size={26} />
-            ),
-          }}
-        />
+        
         
         <Tab.Screen
           name='Profile'
