@@ -19,7 +19,7 @@ export default class ForgotPassword extends Component {
             if(this.state.email != '') {
                 this.setState({buttonFade: true, button: false});
                 console.log('Inside reset func')
-                await axios.post('https://tandora.herokuapp.com/api/auth/forgot-password',{
+                await axios.post('https://spreadora2.herokuapp.com/api/auth/forgot-password',{
                     email: this.state.email
                 })
                 .then((res) => {

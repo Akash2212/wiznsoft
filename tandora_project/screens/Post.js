@@ -43,14 +43,13 @@ export default class Post extends Component {
             let user = JSON.parse(usrdata);
             this.setState({username: user.username, jwt: user.jwt});
 
-            await axios.get('https://tandora.herokuapp.com/api/profiles',{
+            await axios.get('https://spreadora2.herokuapp.com/api/profiles',{
                 headers: {
                     'Authorization': `Bearer ${user.jwt}`,
                 },
             })
             .then((res) => {
                 if(res.data.data.length != 0) {
-                    console.log(res.data.data[0].attributes.username)
                 for(var i=0;i<res.data.data.length;i++) {
                     if(res.data.data[i].attributes.username == user.username){
                         this.setState({url: res.data.data[i].attributes.url})
@@ -77,7 +76,7 @@ export default class Post extends Component {
             /*
             
 
-            await fetch('https://tandora.herokuapp.com/api/upload/files',{
+            await fetch('https://spreadora2.herokuapp.com/api/upload/files',{
                 headers: {
                     Authorization : `Bearer ${user.jwt}`
                 }
@@ -107,7 +106,7 @@ export default class Post extends Component {
 
 
 
-                    await fetch(`https://tandora.herokuapp.com/api/upload`, {
+                    await fetch(`https://spreadora2.herokuapp.com/api/upload`, {
                     method: 'POST',
                     headers: {
                         Authorization: `Bearer ${this.state.jwt}`
@@ -121,7 +120,7 @@ export default class Post extends Component {
                         this.setState({path: ''})
 
                     
-                        fetch('https://tandora.herokuapp.com/api/posts',{
+                        fetch('https://spreadora2.herokuapp.com/api/posts',{
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${this.state.jwt}`,

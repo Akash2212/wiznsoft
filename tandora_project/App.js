@@ -39,6 +39,7 @@ import ForgotPassword from "./screens/ForgotPassword";
 import ViewPhoto from "./screens/ViewPhoto";
 import MyPosts from "./screens/MyPosts";
 import UploadProfile from './screens/UploadProfile';
+import Authentication from './screens/Authentication'
 
 const SPLASH_SCREEN = "Splash";
 const MAIN_SCREEN = "MainScreen";
@@ -137,6 +138,7 @@ export default class App extends Component{
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="HomeScreen" component={HomeScreen}/>
           <Stack.Screen name="Trending" component={Trending}/>
+          <Stack.Screen name="Authentication" component={Authentication}/>
           <Stack.Screen name="Login" component={Login}/>
           <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>
           <Stack.Screen name="ResetPassw" component={ResetPassw}/>

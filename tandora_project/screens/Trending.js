@@ -9,7 +9,7 @@ import AsyncStorage from '@react-native-community/async-storage'
 
 const actions = [
     {
-      text: "Tandora",
+      text: "spreadora2",
       icon: require("../Images/logo.jpeg"),
     },
 ]
@@ -36,7 +36,7 @@ export default class Trending extends Component
             <View style={styles.container}>
                 <View style={{flexDirection:'row',justifyContent:'space-between',padding:15}}>
                     <TouchableOpacity><Image source={require('../Images/user_placeholder.png')} style={{width:40,height:40}}/></TouchableOpacity>
-                    <Text style={styles.tandoraText}>TANDORA</Text>
+                    <Text style={styles.spreadora2Text}>spreadora2</Text>
                     <TouchableOpacity><Ionicons name="md-search-outline" color="#000" size={38} /></TouchableOpacity>
                 </View>
                 <View style={{top: 20,flexDirection:'row',padding:20,alignItems:'center'}}>
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
         flex:1,
         backgroundColor:'#fff'
     },
-    tandoraText:{
+    spreadora2Text:{
         fontSize: 28,
         color:'#2ca7e0',
         fontWeight: '600'

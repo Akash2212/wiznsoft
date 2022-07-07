@@ -17,7 +17,7 @@ export default class InsertDelete extends Component
         const post = () => {
 
             if(this.state.data != '') {
-                fetch('https://tandora.herokuapp.com/api/todos', {
+                fetch('https://spreadora2.herokuapp.com/api/todos', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${jwt}`,
@@ -37,7 +37,7 @@ export default class InsertDelete extends Component
         }
 
         const get = () => {
-            axios.get('https://tandora.herokuapp.com/api/todos')
+            axios.get('https://spreadora2.herokuapp.com/api/todos')
             .then((res) => {
                 const resData = JSON.stringify(res.data.data)
                 alert(resData)

@@ -8,6 +8,9 @@ import AsyncStorage from '@react-native-community/async-storage'
 import ImagePicker from 'react-native-image-crop-picker'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import axios from 'axios'
+import { LoginManager, AccessToken } from "react-native-fbsdk-next";
+import { isEmpty } from 'tls'
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 
 export default class Profile extends Component
@@ -52,11 +55,11 @@ export default class Profile extends Component
 
             var urldata = [];
 
-            await axios.get('https://tandora.herokuapp.com/api/upload/files/')
+            await axios.get('https://spreadora2.herokuapp.com/api/upload/files/')
             .then(res => {
                 for(let i=res.data.length-1;i>=0;i--) {
-                    urldata.push({title:"https://tandora.herokuapp.com"+res.data[i].url})
-                   // urldata['title'] = "https://tandora.herokuapp.com"+res.data[i].url;
+                    urldata.push({title:"https://spreadora2.herokuapp.com"+res.data[i].url})
+                   // urldata['title'] = "https://spreadora2.herokuapp.com"+res.data[i].url;
                     
                 }
                 //console.log(res.data[0].url)
@@ -72,7 +75,7 @@ export default class Profile extends Component
         let usrdata = await AsyncStorage.getItem('user');
         let user = JSON.parse(usrdata);
 
-        await axios.get('https://tandora.herokuapp.com/api/posts',{
+        await axios.get('https://spreadora2.herokuapp.com/api/posts',{
             headers: {
                 "Authorization": `Bearer ${user.jwt}`
             }
@@ -104,7 +107,7 @@ export default class Profile extends Component
             let user = JSON.parse(usrdata);
             this.setState({username: user.username, jwt: user.jwt});
 
-            await axios.get('https://tandora.herokuapp.com/api/profiles',{
+            await axios.get('https://spreadora2.herokuapp.com/api/profiles',{
                 headers: {
                     'Authorization': `Bearer ${user.jwt}`,
                 },
@@ -140,7 +143,7 @@ export default class Profile extends Component
             /*
             
 
-            await fetch('https://tandora.herokuapp.com/api/upload/files',{
+            await fetch('https://spreadora2.herokuapp.com/api/upload/files',{
                 headers: {
                     Authorization : `Bearer ${user.jwt}`
                 }
@@ -170,7 +173,7 @@ export default class Profile extends Component
 
 
 
-                    await fetch(`https://tandora.herokuapp.com/api/upload`, {
+                    await fetch(`https://spreadora2.herokuapp.com/api/upload`, {
                     method: 'POST',
                     headers: {
                         Authorization: `Bearer ${this.state.jwt}`
@@ -179,12 +182,12 @@ export default class Profile extends Component
                     })
                     .then(response => response.json())
                     .then(response => {
-                        console.log(response[0].url);
+                        console.log(response);
                         this.setState({path: ''})
 
                         if(this.state.url == '') {
 
-                        fetch('https://tandora.herokuapp.com/api/profiles',{
+                        fetch('https://spreadora2.herokuapp.com/api/profiles',{
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${this.state.jwt}`,
@@ -193,7 +196,7 @@ export default class Profile extends Component
                         body: JSON.stringify({
                             "data": {
                                 "username": this.state.username,
-                                "url": "https://tandora.herokuapp.com"+response[0].url,
+                                "url": "https://spreadora2.herokuapp.com"+response[0].url,
                             }
                            
                         })
@@ -212,7 +215,7 @@ export default class Profile extends Component
 
                     else {
                         if(this.state.id != null) {
-                        fetch(`https://tandora.herokuapp.com/api/profiles/${this.state.id}`,{
+                        fetch(`https://spreadora2.herokuapp.com/api/profiles/${this.state.id}`,{
                         method: 'PUT',
                         headers: {
                             'Authorization': `Bearer ${this.state.jwt}`,
@@ -221,7 +224,7 @@ export default class Profile extends Component
                         body: JSON.stringify({
                             "data": {
                                 "username": this.state.username,
-                                "url": "https://tandora.herokuapp.com"+response[0].url,
+                                "url": "https://spreadora2.herokuapp.com"+response[0].url,
                             }
                            
                         })
@@ -259,6 +262,13 @@ export default class Profile extends Component
                 .then(() => this.props.navigation.replace('Login'));
                 console.log('Sign out')
 
+                await GoogleSignin.signOut();
+
+                const token = await AccessToken.getCurrentAccessToken();
+                if(!isEmpty(token)){
+                    LoginManager.logOut();
+                }
+
             }
             catch(err) {
                 console.log(err)
@@ -272,7 +282,7 @@ export default class Profile extends Component
             <View style={{padding:5}}>
                 <TouchableOpacity>
                     <Image
-                        source={{uri: "https://tandora.herokuapp.com"+url}}
+                        source={{uri: "https://spreadora2.herokuapp.com"+url}}
                         style={{width:Dimensions.get('window').width,height:200,resizeMode:'contain'}}
                     />
                </TouchableOpacity>

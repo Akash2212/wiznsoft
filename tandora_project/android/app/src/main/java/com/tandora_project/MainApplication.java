@@ -11,6 +11,10 @@ import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import com.BV.LinearGradient.LinearGradientPackage;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+import com.facebook.reactnative.androidsdk.FBSDKPackage;
+
 
 public class MainApplication extends Application implements ReactApplication {
 

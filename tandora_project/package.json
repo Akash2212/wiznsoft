@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.12.1",
+    "@react-native-google-signin/google-signin": "^8.0.0",
     "@react-navigation/bottom-tabs": "^6.2.0",
     "@react-navigation/material-bottom-tabs": "^6.1.1",
     "@react-navigation/native": "^6.0.8",
@@ -25,6 +26,7 @@
     "react": "17.0.2",
     "react-native": "0.67.3",
     "react-native-elements": "^3.4.2",
+    "react-native-fbsdk-next": "^10.0.0",
     "react-native-floating-action": "^1.22.0",
     "react-native-gesture-handler": "^2.3.0",
     "react-native-image-crop-picker": "^0.37.3",

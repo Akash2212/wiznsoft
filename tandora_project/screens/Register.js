@@ -68,7 +68,7 @@ const login = async () => {
     }
     if(this.state.username != '' && this.state.email != '' && this.state.passw != '') {
         this.setState({button: false,buttonFade: true});
-    const url = 'https://tandora.herokuapp.com';
+    const url = 'https://spreadora2.herokuapp.com';
     const requestConfig = {
         method: 'POST',
         headers: {
@@ -92,7 +92,7 @@ const login = async () => {
       else {
         console.log(json)
         _storeData(json.jwt,json.user.email,json.user.username);
-        await fetch('https://tandora.herokuapp.com/api/appusers',{
+        await fetch('https://spreadora2.herokuapp.com/api/appusers',{
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${json.jwt}`,
@@ -122,7 +122,7 @@ const login = async () => {
             <View style={styles.container}>
                 <View style={{padding: 20, alignItems:'center',top:40}}>
                     <Image source={require('../Images/logo.jpeg')} style={{width:80,height:80}}/>
-                    <Text style={styles.loginText}>Signup to Tandora</Text>
+                    <Text style={styles.loginText}>Signup to spreadora2</Text>
                     <View style={{flexDirection:'row'}}><Text style={{top:20,fontSize:18}}>Already have an account? </Text><TouchableOpacity onPress={() => this.props.navigation.navigate('Login')}><Text style={{color:'#007aff',top:20,fontSize:18}}>Login</Text></TouchableOpacity></View>
                     <View style={{top: 60,flexDirection:'row'}}>
                         <View style={{flexDirection:'row',alignItems:'center'}}>

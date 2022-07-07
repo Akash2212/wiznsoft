@@ -5,6 +5,9 @@ import com.facebook.react.ReactActivityDelegate;
 import android.os.Bundle;
 import android.app.Activity;
 import androidx.annotation.Nullable;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
+
 
 public class MainActivity extends ReactActivity {
 
@@ -37,6 +40,7 @@ public class MainActivity extends ReactActivity {
             mInitialProps.putString(TEST, bundle.getString(TEST));
         }
         super.onCreate(savedInstanceState);
+        
     }
 
     @Override

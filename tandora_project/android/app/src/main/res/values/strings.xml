@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Tandora</string>
+    
+<string name="facebook_app_id">475134684169970</string>
+<string name="fb_login_protocol_scheme">fb475134684169970</string>
+<string name="facebook_client_token">4e6497416fe92f5d9ebb8c16514aeb66</string>
+
+
 </resources>

@@ -24,11 +24,11 @@ export default class MyPosts extends Component {
 
             var urldata = [];
 
-            await axios.get('https://tandora.herokuapp.com/api/upload/files/')
+            await axios.get('https://spreadora2.herokuapp.com/api/upload/files/')
             .then(res => {
                 for(let i=res.data.length-1;i>=0;i--) {
-                    urldata.push({title:"https://tandora.herokuapp.com"+res.data[i].url})
-                   // urldata['title'] = "https://tandora.herokuapp.com"+res.data[i].url;
+                    urldata.push({title:"https://spreadora2.herokuapp.com"+res.data[i].url})
+                   // urldata['title'] = "https://spreadora2.herokuapp.com"+res.data[i].url;
                     
                 }
                 //console.log(res.data[0].url)
@@ -44,7 +44,7 @@ export default class MyPosts extends Component {
         let usrdata = await AsyncStorage.getItem('user');
         let user = JSON.parse(usrdata);
 
-        await axios.get('https://tandora.herokuapp.com/api/posts',{
+        await axios.get('https://spreadora2.herokuapp.com/api/posts',{
             headers: {
                 "Authorization": `Bearer ${user.jwt}`
             }
@@ -79,7 +79,7 @@ export default class MyPosts extends Component {
             <View style={{padding:5}}>
                 <TouchableOpacity>
                     <Image
-                        source={{uri: "https://tandora.herokuapp.com"+url}}
+                        source={{uri: "https://spreadora2.herokuapp.com"+url}}
                         style={{width:Dimensions.get('window').width,height:200,resizeMode:'contain'}}
                     />
                </TouchableOpacity>

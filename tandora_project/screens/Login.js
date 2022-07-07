@@ -1,7 +1,12 @@
 import React,{Component} from "react";
-import {View,Text,StyleSheet,Image,TextInput,TouchableOpacity} from 'react-native'
+import {View,Text,StyleSheet,Image,TextInput,TouchableOpacity,Button} from 'react-native'
 import axios from 'axios'
 import AsyncStorage from "@react-native-community/async-storage";
+import { LoginButton, AccessToken, Profile, Settings } from 'react-native-fbsdk-next';
+
+
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+
 
 export default class Login extends Component {
 
@@ -13,6 +18,23 @@ export default class Login extends Component {
             button: true,
             buttonFade: false
         };
+    }
+
+
+    componentDidMount() {
+        Settings.setAppID('475134684169970');
+        Settings.initializeSDK();
+
+        Profile.getCurrentProfile().then(
+            function(current) {
+              if (current) {
+                console.log(current);
+              }
+            }
+          );
+
+        
+
     }
 
    
@@ -36,6 +58,66 @@ export default class Login extends Component {
           
         }; 
 */
+
+const googleLoginToStrapi = async (accessTk) => {
+
+    console.log(accessTk);
+    await axios.get(`https://spreadora2.herokuapp.com/api/auth/google/callback?access_token=${accessTk}`)
+    .then((res) => {
+        console.log(res.data)
+        if(res.data.jwt != '') {
+            _storeData(res.data.jwt,res.data.user.email,res.data.user.username);
+            fetch('https://spreadora2.herokuapp.com/api/appusers',{
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${res.data.jwt}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "data": {
+                        "username": res.data.user.username,
+                        "email": res.data.user.email,
+                    
+                    }
+                })
+            })
+            .then((res) => console.log(res))
+            .catch((e) => console.log(e))
+        }
+    })
+    .catch((e) => console.log(e))
+
+
+}
+
+const fbLoginToStrapi = async (accessTk) => {
+    console.log(accessTk)
+    await axios.get(`https://spreadora2.herokuapp.com/api/auth/facebook/callback?access_token=${accessTk}`)
+    .then((res) => {
+        console.log(res.data)
+        if(res.data.jwt != '') {
+            _storeData(res.data.jwt,res.data.user.email,res.data.user.username);
+            fetch('https://spreadora2.herokuapp.com/api/appusers',{
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${res.data.jwt}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "data": {
+                        "username": res.data.user.username,
+                        "email": res.data.user.email,
+                    
+                    }
+                })
+            })
+            .then((res) => console.log(res))
+            .catch((e) => console.log(e))
+        }
+    })
+    .catch((e) => console.log(e))
+}
+
 
 const _storeData = async (token,emailID,name) => {
     try {
@@ -99,6 +181,10 @@ const login = async () => {
 }
 
     const forgotPassw = async () => {
+
+        // await fetch('https://spreadora2.herokuapp.com/connect/facebook')
+        // .then((res) => console.log(res))
+        // .catch((e) => console.log(e))
         
         this.props.navigation.navigate("ForgotPassword")
         
@@ -121,18 +207,66 @@ const login = async () => {
                     <Image source={require('../Images/logo.jpeg')} style={{width:80,height:80}}/>
                     <Text style={styles.loginText}>Log in to Tandora</Text>
                     <View style={{flexDirection:'row'}}><Text style={{top:20,fontSize:18}}>Don't have an account? </Text><TouchableOpacity onPress={() => this.props.navigation.navigate('Register')}><Text style={{color:'#007aff',top:20,fontSize:18}}>Signup</Text></TouchableOpacity></View>
-                    <View style={{top: 60,flexDirection:'row'}}>
-                        <View style={{flexDirection:'row',alignItems:'center'}}>
+                    <View style={{top: 40,flexDirection:'column'}}>
+
+                    {/* <View style={{flexDirection:'row',alignItems:'center'}}>
                             <Image source={require('../Images/googleLogo.png')} style={{width: 30,height:30}}/>
                             <Text style={{left: 20,fontSize:18}}>Sign in with Google</Text>
-                        </View>
-                        <View style={{left: 40}}>
+                    </View> */}
+
+                    <Button title={'Sign in with Google'} onPress={() =>  {
+                            GoogleSignin.configure({
+                                androidClientId: '1087775513299-c4dkatotebardsr54r3qkflbh821ubp1.apps.googleusercontent.com',
+                                
+                            });
+                        GoogleSignin.hasPlayServices().then((hasPlayService) => {
+                                if (hasPlayService) {
+                                    GoogleSignin.signIn().then((userInfo) => {
+                                        GoogleSignin.getTokens().then((res)=>{
+                                            googleLoginToStrapi(res.accessToken);
+                                            })
+                                            .catch((e) => console.log(e))
+                                            console.log(JSON.stringify(userInfo))
+                                    }).catch((e) => {
+                                    console.log("ERROR IS: " + JSON.stringify(e));
+                                    })
+                                }
+                        }).catch((e) => {
+                            console.log("ERROR IS: " + JSON.stringify(e));
+                        })
+                        }} />
+
+                        
+                <View style={{top:20,width:30}}>
+                    <LoginButton
+                    
+                    onLoginFinished={
+                    (error, result) => {
+                    if (error) {
+                    console.log("login has error: " + result.error);
+                    } else if (result.isCancelled) {
+                    console.log("login is cancelled.");
+                    } else {
+
+                    AccessToken.getCurrentAccessToken().then(
+                    (data) => {
+                        //console.log(data.accessToken.toString())
+                        fbLoginToStrapi(data.accessToken.toString())
+                    }
+                    )
+                    }
+                    }
+                    }
+                    onLogoutFinished={() => console.log("logout.")}/>
+                </View>
+                     
+                        {/* <View style={{left: 40}}>
                             <Image source={require('../Images/facebookLogo.jpeg')} style={{width:60,height:60}}/>
-                        </View>
-                    </View>
+                        </View> */}
+                    </View> 
                     <Text style={{top: 80}}>OR</Text>
                 </View>
-                <View style={{top: 120,left: 30}}>
+                <View style={{top: 100,left: 30}}>
                         
                         <TextInput
                            placeholder="Enter email"
@@ -160,6 +294,9 @@ const login = async () => {
                 
                 </View>
                 <TouchableOpacity onPress={() => forgotPassw()} style={{top:200}}><Text style={{color: '#007aff',textAlign:'center'}}>Forgot password</Text></TouchableOpacity>
+                
+
+
             </View>
         )
     }
@@ -187,7 +324,7 @@ const styles = StyleSheet.create({
         color: '#000',
         width: '80%',
         backgroundColor:'#d6d6d4',
-        top: 30,
+        top: 40,
         borderRadius: 10
     },
     button: {

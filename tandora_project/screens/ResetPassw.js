@@ -30,7 +30,7 @@ export default class ResetPassw extends Component {
          const reset = async () => {
              this.setState({buttonFade: true, button: false});
              if(this.state.newPassword === this.state.confirmPassword) {
-                 await axios.post('https://tandora.herokuapp.com/api/auth/reset-password', {
+                 await axios.post('https://spreadora2.herokuapp.com/api/auth/reset-password', {
                  code: verifyCode,
                  password: this.state.newPassword,
                  passwordConfirmation: this.state.confirmPassword,
