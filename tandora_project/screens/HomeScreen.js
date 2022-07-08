@@ -1,18 +1,15 @@
 import React,{Component, Profiler} from 'react'
-import {View} from 'react-native'
+import {View, PermissionsAndroid} from 'react-native'
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Entypo from 'react-native-vector-icons/Entypo'
 import Fontisto from 'react-native-vector-icons/Fontisto'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-
-import Login from './Login';
+import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
+import Geolocation from '@react-native-community/geolocation';
 import Profile from './Profile';
 import Post from './Post';
-import Trending from './Trending';
-import SplashScreen from './SplashScreen';
-import InsertDelete from './InsertDelete';
-import MyPosts from './MyPosts';
+import Nearby from './Nearyby';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -26,6 +23,57 @@ const BuySell = () => {
 
 
 export default class HomeScreen extends Component {
+
+
+  componentDidMount() {
+
+
+    async function requestLocationPermission() {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            'title': 'Location Permission',
+            'message': 'This App needs access to your location ' +
+                       'so we can know where you are.'
+          }
+        )
+
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+
+          
+          RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({
+            interval: 10000,
+            fastInterval: 5000,
+          })
+            .then((data) => {
+              console.log(data)
+            })
+            .catch((err) => {
+             console.log(err)
+            });
+            Geolocation.getCurrentPosition((info) => {
+              console.log(info)
+          })
+         
+        } else {
+          console.log("Location permission denied")
+        }
+      } catch (err) {
+        console.warn(err)
+      }
+    }
+
+  requestLocationPermission().catch((e) => console.log(e))
+
+
+
+
+    
+  }
+
+
+
   render()
   {
     return(
@@ -40,6 +88,17 @@ export default class HomeScreen extends Component {
             tabBarLabel: 'Add Posts',
             tabBarIcon: ({ color }) => (
               <MaterialCommunityIcons name="publish" color={color} size={26} />
+            ),
+          }}
+        />
+
+        <Tab.Screen
+          name='Nearby'
+          component={Nearby}
+          options={{
+            tabBarLabel: 'Nearby',
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="near-me" color={color} size={26} style={{right:3}}/>
             ),
           }}
         />

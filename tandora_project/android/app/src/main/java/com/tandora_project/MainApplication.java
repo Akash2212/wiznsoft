@@ -14,6 +14,7 @@ import com.BV.LinearGradient.LinearGradientPackage;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
+import com.heanoria.library.reactnative.locationenabler.RNAndroidLocationEnablerPackage;
 
 
 public class MainApplication extends Application implements ReactApplication {

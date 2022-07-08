@@ -39,7 +39,7 @@ import ForgotPassword from "./screens/ForgotPassword";
 import ViewPhoto from "./screens/ViewPhoto";
 import MyPosts from "./screens/MyPosts";
 import UploadProfile from './screens/UploadProfile';
-import Authentication from './screens/Authentication'
+import Nearby from './screens/Nearyby'
 
 const SPLASH_SCREEN = "Splash";
 const MAIN_SCREEN = "MainScreen";
@@ -62,6 +62,8 @@ export default class App extends Component{
   }
 
   componentDidMount() {
+
+    
 
     Linking.getInitialURL().then(url => {
       parseUrl(url)
@@ -123,6 +125,7 @@ export default class App extends Component{
         <Stack.Screen name="Register" component={Register}/>
         <Stack.Screen name="HomeScreen" component={HomeScreen}/>
         <Stack.Screen name="Profile" component={Profile}/>
+        <Stack.Screen name="Nearby" component={Nearby}/>
         <Stack.Screen name="UploadProfile" component={UploadProfile}/>
         <Stack.Screen name="MyPosts" component={MyPosts}/>
         <Stack.Screen name="Post" component={Post}/>
@@ -138,7 +141,6 @@ export default class App extends Component{
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="HomeScreen" component={HomeScreen}/>
           <Stack.Screen name="Trending" component={Trending}/>
-          <Stack.Screen name="Authentication" component={Authentication}/>
           <Stack.Screen name="Login" component={Login}/>
           <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>
           <Stack.Screen name="ResetPassw" component={ResetPassw}/>

@@ -198,6 +198,8 @@ dependencies {
 
     implementation project(':react-native-linear-gradient')
 
+    compile project(':react-native-android-location-enabler')
+
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
     }

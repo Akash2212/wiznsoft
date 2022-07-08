@@ -5,6 +5,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import AsyncStorage from "@react-native-community/async-storage";
 import ImagePicker from 'react-native-image-crop-picker';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
+import Geolocation from '@react-native-community/geolocation';
 import axios from 'axios';
 
 export default class Post extends Component {
@@ -16,7 +17,10 @@ export default class Post extends Component {
             desc: '',
             jwt: '',
             username: '',
-            url: ''
+            url: '',
+            enabledPost: true,
+            disabledPost: false
+          
         }
     }
 
@@ -72,6 +76,8 @@ export default class Post extends Component {
 
         const makePost = async () => {
 
+            this.setState({disabledPost: true,enabledPost: false})
+
 
             /*
             
@@ -116,8 +122,12 @@ export default class Post extends Component {
                     .then(response => response.json())
                     .then(response => {
                         console.log(response[0].url);
-                        alert('Image posted successfully')
-                        this.setState({path: ''})
+                        
+                        
+
+                        Geolocation.getCurrentPosition((info) => {
+                            console.log(info.coords.latitude,info.coords.longitude)
+                        
 
                     
                         fetch('https://spreadora2.herokuapp.com/api/posts',{
@@ -132,18 +142,33 @@ export default class Post extends Component {
                                 "imageURL": response[0].url,
                                 "time": new Date().toLocaleTimeString(),
                                 "date": new Date().toLocaleDateString(),
-                                "username": this.state.username
+                                "username": this.state.username,
+                                "latitude": info.coords.latitude,
+                                "longitude": info.coords.longitude
                             }
                            
                         })
                     })
                     .then((res) => {
+                        alert('Image posted successfully')
                         console.log("Post datas added",res)
+                        this.setState({path: ''})
                         this.textInput.clear();
+                        this.setState({disabledPost: false,enabledPost: true})
+
                     })
-                    .catch((e) => console.log(e))
+                    .catch((e) => {
+                        console.log(e)
+                        this.setState({disabledPost: false,enabledPost: true})
 
+                    })
 
+                }, error => {
+                    alert('Error', JSON.stringify(error))
+                    this.setState({disabledPost: false,enabledPost: true})
+
+                },
+                {enableHighAccuracy: false, timeout: 5000,maximumAge: 10000},)
 
                     })
                     .catch(error => {
@@ -170,10 +195,16 @@ export default class Post extends Component {
                         </TouchableOpacity> */}
                         <Text style={styles.newPost}>New Post</Text>
                     </View>
-                    <View>
+                    <View>{this.state.enabledPost &&
                         <TouchableOpacity onPress={() => makePost()} style={styles.postButton}>
                             <Text style={{color:'#fff'}}>Post</Text>
                         </TouchableOpacity>
+                        }
+                        {this.state.disabledPost&&
+                         <View style={styles.postButtonFade}>
+                         <Text style={{color:'#fff'}}>Post</Text>
+                        </View>
+                        }
                     </View>
                 </View>
                 <View style={{flexDirection:'row',alignItems:'center',left:20}}>
@@ -231,6 +262,14 @@ const styles = StyleSheet.create({
         width: 70,
         height: 30,
         backgroundColor:'#2ca7e0',
+        justifyContent:'center',
+        alignItems:'center'
+    },
+    postButtonFade: {
+        borderRadius: 5,
+        width: 70,
+        height: 30,
+        backgroundColor:'#599feb',
         justifyContent:'center',
         alignItems:'center'
     },
