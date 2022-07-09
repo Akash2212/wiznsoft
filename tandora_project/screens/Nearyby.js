@@ -1,8 +1,13 @@
 import React,{Component} from 'react'
-import {View, Text, TouchableOpacity, StyleSheet,PermissionsAndroid,FlatList,Image,Dimensions} from 'react-native'
+import {View, Text, TouchableOpacity, StyleSheet,PermissionsAndroid,FlatList,Image,ImageBackground,Dimensions,LayoutAnimation, Platform, UIManager} from 'react-native'
+import LinearGradient from 'react-native-linear-gradient';
 import Geolocation from '@react-native-community/geolocation';
 import { getPathFromState } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons'
+import Feather from 'react-native-vector-icons/Feather'
+import Entypo from 'react-native-vector-icons/Entypo'
 import axios from 'axios';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class Nearby extends Component {
 
@@ -12,6 +17,10 @@ export default class Nearby extends Component {
             latitude: 0,
             longitude: 0,
             data: [],
+            expanded: false
+        }
+        if (Platform.OS === 'android') {
+            UIManager.setLayoutAnimationEnabledExperimental(true);
         }
     }
 
@@ -23,10 +32,14 @@ export default class Nearby extends Component {
             getNearbyPosts()
         })
 
+        
+
        const getNearbyPosts = async () => {
         console.log(this.state.latitude)
+        let usrdata = await AsyncStorage.getItem('user');
+        let user = JSON.parse(usrdata);
         if(this.state.latitude != 0 && this.state.longitude != 0) {
-            await axios.get(`https://spreadora2.herokuapp.com/api/nearby/${this.state.latitude}/${this.state.longitude}`)
+            await axios.get(`https://spreadora2.herokuapp.com/api/nearby/${this.state.latitude}/${this.state.longitude}/${user.username}`)
             .then((res) => {
                 var dataURL = []
                 for(var i=0;i<res.data.length;i++) {
@@ -43,26 +56,79 @@ export default class Nearby extends Component {
 
     }
 
+    changeLayout = () => {
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        this.setState({ expanded: !this.state.expanded });
+      }
+
 
     render() {
 
-        const Item = ({ url,desc,time,date }) => (
-            
-            <View style={{padding:5}}>
-                <TouchableOpacity>
-                    <Image
-                        source={{uri: "https://spreadora2.herokuapp.com"+url}}
-                        style={{width:Dimensions.get('window').width,height:200,resizeMode:'contain'}}
-                    />
-               </TouchableOpacity>
-               <View style={{height:50,justifyContent:'center',margin:10}}>
-                    <Text style={styles.desc}>{desc}</Text>
-                    <View style={{flexDirection:'row',justifyContent:'space-between',top:5,bottom:5}}>
-                        <Text style={styles.date}>{date}</Text>
-                        <Text style={styles.time}>{time}</Text>
+        const Item = ({ url,desc,time,date,distance,username }) => (
+
+            <View style={{paddingBottom:30}}>
+
+                <View style={{top: 20,flexDirection:'row',padding:20,alignItems:'center'}}>
+                    <Image source={require('../Images/user_placeholder.png')} style={{width: 40,height:40}} />
+                    <View style={{left: 20}}>
+                        <Text style={styles.user_name}>{username}</Text>
                     </View>
-               </View>
-            </View>
+                </View>
+                <View style={{alignItems:'center',top: 30,justifyContent: 'center',left:10,width:Dimensions.get('window').width}}>
+                    <ImageBackground source={{uri: "https://spreadora2.herokuapp.com"+url}} style={{width: '95%',height:250}}  imageStyle={{ borderRadius: 14}}>
+                    { !this.state.expanded &&
+                        <LinearGradient 
+                            colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']} 
+                            style={{height : '50%', width : '95%',borderRadius:14,position:'absolute',bottom:0}}>
+                              
+                                <View style={{padding:10,position:'absolute',bottom:0}}>
+                                    <Text style={{color:'#fff'}}>{desc.slice(0,40)}...</Text>
+                                    <TouchableOpacity activeOpacity={0.8} onPress={this.changeLayout} style={styles.Btn}><Text style={{color:'#fff',fontWeight:'700'}}>see more</Text></TouchableOpacity>
+                                </View>
+                                
+                                
+                        </LinearGradient>
+                        }
+                    </ImageBackground>
+                   
+                    <View style={{ height: this.state.expanded ? null : 0, overflow: 'hidden',padding:10 }}>
+                                        <Text style={styles.text}>{desc}</Text>
+                                        { this.state.expanded &&
+                                <View style={{bottom:0}}>
+                                    <TouchableOpacity activeOpacity={0.8} onPress={this.changeLayout} style={styles.Btn}><Text style={{fontWeight:'700'}}>see less</Text></TouchableOpacity>
+                                </View>
+                                }
+                                <Text></Text>
+                    </View>
+                </View>
+                <View style={{flexDirection:'row',top:20,left: 10}}>
+                    <Entypo
+                        name="location-pin"
+                        size={25}
+                        color="#696969"
+                    />
+                    <Text>{distance} kms aways   *</Text>
+                    <Text>  {time} ago  </Text>
+                    
+                </View>
+                
+                </View>
+            
+            // <View style={{padding:5}}>
+            //     <TouchableOpacity>
+            //         <Image
+            //             source={{uri: "https://spreadora2.herokuapp.com"+url}}
+            //             style={{width:Dimensions.get('window').width,height:200,resizeMode:'contain'}}
+            //         />
+            //    </TouchableOpacity>
+            //    <View style={{height:50,justifyContent:'center',margin:10}}>
+            //         <Text style={styles.desc}>{desc}</Text>
+            //         <View style={{flexDirection:'row',justifyContent:'space-between',top:5,bottom:5}}>
+            //             <Text style={styles.date}>{date}</Text>
+            //             <Text style={styles.time}>{time}</Text>
+            //         </View>
+            //    </View>
+            // </View>
           );
 
 
@@ -73,6 +139,8 @@ export default class Nearby extends Component {
                     desc={item.description}
                     time={item.time}
                     date={item.date}
+                    distance={item.distance}
+                    username={item.username}
                 />
             );
             
@@ -93,12 +161,13 @@ export default class Nearby extends Component {
         return(
             <View style={styles.container}>
                  <View style={{height:50,backgroundColor:'#2ca7e0',width:'100%',justifyContent:'center'}}>
-                    <Text style={{color:'#fff',fontWeight:'800',fontSize:20,left:20}}>My Posts</Text>
+                    <Text style={{color:'#fff',fontWeight:'800',fontSize:20,left:20}}>Nearby Posts</Text>
                 </View> 
                 
                 <FlatList
                     data={this.state.data}
                     renderItem={renderItem}
+                    keyExtractor={(item)=> item.username}
                 />
                 
             </View>
@@ -110,5 +179,10 @@ export default class Nearby extends Component {
 const styles = StyleSheet.create({
     container: {
         flex:1
-    }
+    },
+    user_name: {
+        fontWeight: '700',
+        fontSize: 20,
+        color:'#000'
+    },
 })

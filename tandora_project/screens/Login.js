@@ -2,7 +2,7 @@ import React,{Component} from "react";
 import {View,Text,StyleSheet,Image,TextInput,TouchableOpacity,Button} from 'react-native'
 import axios from 'axios'
 import AsyncStorage from "@react-native-community/async-storage";
-import { LoginButton, AccessToken, Profile, Settings } from 'react-native-fbsdk-next';
+import { LoginButton, AccessToken, Profile, Settings, LoginManager} from 'react-native-fbsdk-next';
 
 
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
@@ -22,13 +22,18 @@ export default class Login extends Component {
 
 
     componentDidMount() {
+
         Settings.setAppID('475134684169970');
         Settings.initializeSDK();
+        
 
         Profile.getCurrentProfile().then(
             function(current) {
               if (current) {
                 console.log(current);
+                if(current.userID.length != 0){ 
+                    LoginManager.logOut();
+                }
               }
             }
           );
@@ -91,6 +96,7 @@ const googleLoginToStrapi = async (accessTk) => {
 }
 
 const fbLoginToStrapi = async (accessTk) => {
+   
     console.log(accessTk)
     await axios.get(`https://spreadora2.herokuapp.com/api/auth/facebook/callback?access_token=${accessTk}`)
     .then((res) => {
@@ -112,10 +118,10 @@ const fbLoginToStrapi = async (accessTk) => {
                 })
             })
             .then((res) => console.log(res))
-            .catch((e) => console.log(e))
+            .catch((e) => console.log("App user fetch error  "+e))
         }
     })
-    .catch((e) => console.log(e))
+    .catch((e) => console.log("Error in process access token   "+e))
 }
 
 

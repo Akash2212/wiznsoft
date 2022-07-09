@@ -230,19 +230,21 @@ export default class Post extends Component {
                             style={{width: 300,height:190}}
                         />
                     </View>
-                    <View style={{width:'100%',top:40}}>
+                    
+                </View>
+                <View style={{width:'100%',top:10}}>
                         <TextInput
                             style={{ left: 25,fontSize:17,width:'85%' }} 
                             placeholder="Description"
                             multiline={true}
                             editable={true}
-                            maxHeight={150}
-                            maxLength={100}
+                            numberOfLines={3}
+                            maxHeight={350}
+                            maxLength={300}
                             ref={input => { this.textInput = input }}
                             onChangeText={(e) => this.setState({desc: e})}
                         />
                     </View>
-                </View>
             </View>
         );
     }

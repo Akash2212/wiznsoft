@@ -10,6 +10,7 @@ import Geolocation from '@react-native-community/geolocation';
 import Profile from './Profile';
 import Post from './Post';
 import Nearby from './Nearyby';
+import Trending from './Trending';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -114,6 +115,7 @@ export default class HomeScreen extends Component {
             ),
           }}
         />
+
       </Tab.Navigator>
     );
   }

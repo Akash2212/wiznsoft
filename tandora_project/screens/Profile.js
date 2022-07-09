@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-community/async-storage'
 import ImagePicker from 'react-native-image-crop-picker'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import axios from 'axios'
-import { LoginManager, AccessToken } from "react-native-fbsdk-next";
+import { LoginManager, AccessToken,Settings,ProfileFB } from "react-native-fbsdk-next";
 import { isEmpty } from 'tls'
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
@@ -48,6 +48,9 @@ export default class Profile extends Component
     }
 
     componentDidMount() {
+
+        Settings.setAppID('475134684169970');
+        Settings.initializeSDK();
 
 
         const show = async () => {
@@ -260,18 +263,41 @@ export default class Profile extends Component
             try {
                 await AsyncStorage.removeItem('user')
                 .then(() => this.props.navigation.replace('Login'));
-                console.log('Sign out')
+                
+                GoogleSignin.getTokens().then((res)=>{
+                    if(!res.accessToken.isEmpty()){
+                        GoogleSignin.signOut().then(() => {
+                            AsyncStorage.removeItem('user')
+                            .then(() => this.props.navigation.replace('Login'));
+                        })
 
-                await GoogleSignin.signOut();
+                    }
+
+                })
+                .catch((e) => console.log(e))
+
 
                 const token = await AccessToken.getCurrentAccessToken();
-                if(!isEmpty(token)){
-                    LoginManager.logOut();
-                }
+                ProfileFB.getCurrentProfile().then(
+                    function(current) {
+                      if (current) {
+                        console.log(current);
+                        if(!isEmpty(current.userID)){
+                            LoginManager.logOut();
+                            AsyncStorage.removeItem('user')
+                            .then(() => this.props.navigation.replace('Login'));
+                        }
+                      }
+                    }
+                  );
+
+                  console.log('Sign out')
+        
+                
 
             }
             catch(err) {
-                console.log(err)
+                console.log("Error in logout "+err)
             }
         }
 
