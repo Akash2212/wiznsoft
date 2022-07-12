@@ -8,12 +8,12 @@ import AsyncStorage from '@react-native-community/async-storage'
 import ImagePicker from 'react-native-image-crop-picker'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import axios from 'axios'
-import { LoginManager, AccessToken,Settings,ProfileFB } from "react-native-fbsdk-next";
+import { LoginManager, AccessToken,Settings,Profile } from "react-native-fbsdk-next";
 import { isEmpty } from 'tls'
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 
 
-export default class Profile extends Component
+export default class ProfileScreen extends Component
 {
 
     constructor(props) {
@@ -49,8 +49,15 @@ export default class Profile extends Component
 
     componentDidMount() {
 
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
+
         Settings.setAppID('475134684169970');
         Settings.initializeSDK();
+
+        GoogleSignin.configure({
+            androidClientId: '1087775513299-c4dkatotebardsr54r3qkflbh821ubp1.apps.googleusercontent.com',
+            
+        });
 
 
         const show = async () => {
@@ -129,8 +136,16 @@ export default class Profile extends Component
         }
 
         getUser()
+
+          });
+
+        
         
     }
+
+    componentWillUnmount() {
+        this._unsubscribe();
+      }
 
 
 
@@ -261,16 +276,20 @@ export default class Profile extends Component
         const signout = async () => {
             console.log("In sign")
             try {
-                await AsyncStorage.removeItem('user')
-                .then(() => this.props.navigation.replace('Login'));
+                
                 
                 GoogleSignin.getTokens().then((res)=>{
-                    if(!res.accessToken.isEmpty()){
+                    if(res.accessToken != null){
+                        console.log("Google signout")
                         GoogleSignin.signOut().then(() => {
                             AsyncStorage.removeItem('user')
                             .then(() => this.props.navigation.replace('Login'));
                         })
-
+                    }
+                    else {
+                        AsyncStorage.removeItem('user')
+                        .then(() => this.props.navigation.replace('Login'));
+                        console.log('Sign out')
                     }
 
                 })
@@ -278,20 +297,25 @@ export default class Profile extends Component
 
 
                 const token = await AccessToken.getCurrentAccessToken();
-                ProfileFB.getCurrentProfile().then(
+                Profile.getCurrentProfile().then(
                     function(current) {
                       if (current) {
-                        console.log(current);
+                        console.log(current.userID);
                         if(!isEmpty(current.userID)){
                             LoginManager.logOut();
                             AsyncStorage.removeItem('user')
                             .then(() => this.props.navigation.replace('Login'));
                         }
+                        else {
+                            AsyncStorage.removeItem('user')
+                        .then(() => {this.props.navigation.replace('Login')});
+                        console.log('Sign out')
+                        }
                       }
                     }
                   );
 
-                  console.log('Sign out')
+                  
         
                 
 

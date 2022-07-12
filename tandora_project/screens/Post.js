@@ -7,6 +7,8 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import Geolocation from '@react-native-community/geolocation';
 import axios from 'axios';
+import {NavigationEvents} from 'react-navigation';
+
 
 export default class Post extends Component {
     constructor(props) {
@@ -37,41 +39,50 @@ export default class Post extends Component {
           
     }
 
-    
-
     componentDidMount() {
 
-        const getUser = async () => {
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
 
-            let usrdata = await AsyncStorage.getItem('user');
-            let user = JSON.parse(usrdata);
-            this.setState({username: user.username, jwt: user.jwt});
+            const getUser = async () => {
 
-            await axios.get('https://spreadora2.herokuapp.com/api/profiles',{
-                headers: {
-                    'Authorization': `Bearer ${user.jwt}`,
-                },
-            })
-            .then((res) => {
-                if(res.data.data.length != 0) {
-                for(var i=0;i<res.data.data.length;i++) {
-                    if(res.data.data[i].attributes.username == user.username){
-                        this.setState({url: res.data.data[i].attributes.url})
+                let usrdata = await AsyncStorage.getItem('user');
+                let user = JSON.parse(usrdata);
+                this.setState({username: user.username, jwt: user.jwt});
+    
+                await axios.get('https://spreadora2.herokuapp.com/api/profiles',{
+                    headers: {
+                        'Authorization': `Bearer ${user.jwt}`,
+                    },
+                })
+                .then((res) => {
+                    if(res.data.data.length != 0) {
+                    for(var i=0;i<res.data.data.length;i++) {
+                        if(res.data.data[i].attributes.username == user.username){
+                            this.setState({url: res.data.data[i].attributes.url})
+                        }
                     }
+                    
                 }
+                })
+                .catch((e) => console.log(e))
+    
             }
-            })
-            .catch((e) => console.log(e))
+    
+            getUser()
 
-        }
 
-        getUser()
+          });
+
+        
     }
+
+    componentWillUnmount() {
+        this._unsubscribe();
+      }
 
 
     render() {
-
-       
+      
 
 
         const makePost = async () => {
@@ -127,9 +138,10 @@ export default class Post extends Component {
 
                         Geolocation.getCurrentPosition((info) => {
                             console.log(info.coords.latitude,info.coords.longitude)
+
+                        
                         
 
-                    
                         fetch('https://spreadora2.herokuapp.com/api/posts',{
                         method: 'POST',
                         headers: {
@@ -144,11 +156,13 @@ export default class Post extends Component {
                                 "date": new Date().toLocaleDateString(),
                                 "username": this.state.username,
                                 "latitude": info.coords.latitude,
-                                "longitude": info.coords.longitude
+                                "longitude": info.coords.longitude,
+                                "profileURL": this.state.url
                             }
                            
                         })
                     })
+                    
                     .then((res) => {
                         alert('Image posted successfully')
                         console.log("Post datas added",res)
@@ -162,6 +176,9 @@ export default class Post extends Component {
                         this.setState({disabledPost: false,enabledPost: true})
 
                     })
+
+                    
+                        
 
                 }, error => {
                     alert('Error', JSON.stringify(error))
@@ -180,10 +197,13 @@ export default class Post extends Component {
                 }   
         }
 
+        //<NavigationEvents onDidFocus={() => console.log('I am triggered')} />
+
 
 
         return(
             <View style={styles.container}>
+
                 <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-between',padding:10}}>
                     <View style={{flexDirection:'row',alignItems:'center'}}>
                         {/* <TouchableOpacity>
@@ -209,7 +229,7 @@ export default class Post extends Component {
                 </View>
                 <View style={{flexDirection:'row',alignItems:'center',left:20}}>
                     <Image
-                        source={this.state.url == '' ? require('../Images/user_placeholder.png') : {uri: this.state.url}}
+                        source={this.state.url == '' ? require('../Images/user_placeholder.png') : {uri: this.state.url} }
                         style={styles.userImage}
                     />
                     <Text style={styles.username}>{this.state.username}</Text>

@@ -28,7 +28,7 @@ export default class ForgotPassword extends Component {
                 })
                 .catch((e) => {
                     console.log(e)
-                    alert(e.error)
+                    alert(e)
                     this.setState({buttonFade: false, button: true})
                 })
                 

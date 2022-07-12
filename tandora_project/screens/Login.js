@@ -25,7 +25,13 @@ export default class Login extends Component {
 
         Settings.setAppID('475134684169970');
         Settings.initializeSDK();
+
+        GoogleSignin.configure({
+            androidClientId: '1087775513299-c4dkatotebardsr54r3qkflbh821ubp1.apps.googleusercontent.com',
+            
+        });
         
+
 
         Profile.getCurrentProfile().then(
             function(current) {
@@ -244,6 +250,7 @@ const login = async () => {
 
                         
                 <View style={{top:20,width:30}}>
+
                     <LoginButton
                     
                     onLoginFinished={
@@ -256,14 +263,16 @@ const login = async () => {
 
                     AccessToken.getCurrentAccessToken().then(
                     (data) => {
-                        //console.log(data.accessToken.toString())
+                        console.log(data.accessToken.toString())
                         fbLoginToStrapi(data.accessToken.toString())
                     }
                     )
+                    .catch((e) => console.log(e))
                     }
                     }
                     }
                     onLogoutFinished={() => console.log("logout.")}/>
+
                 </View>
                      
                         {/* <View style={{left: 40}}>

@@ -25,6 +25,8 @@ export default class App extends React.Component {
 
   componentDidMount() {
 
+    
+
 
     Geolocation.getCurrentPosition((info) => {
         console.log(info)
@@ -88,12 +90,12 @@ export default class App extends React.Component {
                 <View style={{paddingBottom:20}}>
 
                 <View style={{flexDirection:'row',padding:20,alignItems:'center'}}>
-                    <Image source={require('../Images/user_placeholder.png')} style={{width: 40,height:40}} />
+                    <Image source={ item.url != "" ? {uri: item.profileURL} : require('../Images/user_placeholder.png')} style={{width: 40,height:40,borderRadius: 15}} />
                     <View style={{left: 20}}>
                         <Text style={styles.user_name}>{item.username}</Text>
                     </View>
                 </View>
-                <View style={{alignItems:'center',top: 30,justifyContent: 'center',width:Dimensions.get('window').width}}>
+                <View style={{alignItems:'center',top: 10,justifyContent: 'center',width:Dimensions.get('window').width}}>
                     <ImageBackground source={{uri: "https://spreadora2.herokuapp.com"+item.imageURL}} style={{width: '95%',height:250}}  imageStyle={{ borderRadius: 14}}>
                     
                         <LinearGradient 

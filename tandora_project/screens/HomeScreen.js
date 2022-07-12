@@ -7,10 +7,10 @@ import Fontisto from 'react-native-vector-icons/Fontisto'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
 import Geolocation from '@react-native-community/geolocation';
-import Profile from './Profile';
 import Post from './Post';
 import Nearby from './Nearyby';
 import Trending from './Trending';
+import ProfileScreen from './ProfileScreen';
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -107,7 +107,7 @@ export default class HomeScreen extends Component {
         
         <Tab.Screen
           name='Profile'
-          component={Profile}
+          component={ProfileScreen}
           options={{
             tabBarLabel: 'Profile',
             tabBarIcon: ({ color }) => (
