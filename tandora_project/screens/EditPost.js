@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Alert, Modal, TouchableHighlight } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign'
+import Entypo from 'react-native-vector-icons/Entypo'
 import AsyncStorage from "@react-native-community/async-storage";
 import ImagePicker from 'react-native-image-crop-picker';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
@@ -16,7 +17,7 @@ export default class Post extends Component {
         this.state = {
             mime: '',
             path: '',
-            desc: '',
+            desc: this.props.route.params.selectedDesc,
             jwt: '',
             username: '',
             url: '',
@@ -50,11 +51,6 @@ export default class Post extends Component {
                 let usrdata = await AsyncStorage.getItem('user');
                 let user = JSON.parse(usrdata);
                 this.setState({ username: user.username, jwt: user.jwt });
-
-                let draft = await AsyncStorage.getItem('DraftedPost');
-                let draftedPost = JSON.parse(draft);
-                this.setState({path: draftedPost.imagePath, desc: draftedPost.desc})
-
 
                 await axios.get('https://spreadora2.herokuapp.com/api/profiles', {
                     headers: {
@@ -91,32 +87,10 @@ export default class Post extends Component {
         this.setState({ modalVisible: visible });
     }
 
-    
-
 
     render() {
 
 
-        const saveAsDraft = async () => {
-            console.log("in save");
-
-            if(this.state.path != '' && this.state.desc != '') {
-                try {
-                    let draftedPostCredentials = {
-                        imagePath: this.state.path,
-                        desc: this.state.desc
-                    }
-                    await AsyncStorage.setItem('DraftedPost',JSON.stringify(draftedPostCredentials))
-                    .then(() => alert('Post saved as draft'))
-
-                    
-                }
-                catch(err) {
-                    alert(err)
-                    console.log(err)
-                }
-            } 
-        }
 
         const makePost = async () => {
 
@@ -152,11 +126,6 @@ export default class Post extends Component {
 
             if (this.state.path != '') {
 
-
-
-
-
-
                 await fetch(`https://spreadora2.herokuapp.com/api/upload`, {
                     method: 'POST',
                     headers: {
@@ -177,8 +146,8 @@ export default class Post extends Component {
                             const d = new Date();
                             console.log(d.toLocaleDateString(), (d.getHours() + 24) % 12 || 12, d.getMinutes() + 1,)
 
-                            fetch('https://spreadora2.herokuapp.com/api/posts', {
-                                method: 'POST',
+                            fetch(`https://spreadora2.herokuapp.com/api/posts/${this.props.route.params.selectedID}`, {
+                                method: 'PUT',
                                 headers: {
                                     'Authorization': `Bearer ${this.state.jwt}`,
                                     'Content-Type': 'application/json'
@@ -205,7 +174,7 @@ export default class Post extends Component {
                                     this.setState({ path: '' })
                                     this.textInput.clear();
                                     this.setState({ disabledPost: false, enabledPost: true })
-
+                                    this.props.navigation.goBack();
                                 })
                                 .catch((e) => {
                                     console.log(e)
@@ -229,7 +198,62 @@ export default class Post extends Component {
                     });
             }
             else {
-                alert('Insert image first')
+
+                Geolocation.getCurrentPosition((info) => {
+                    console.log(info.coords.latitude, info.coords.longitude)
+
+
+                    const d = new Date();
+                    console.log(d.toLocaleDateString(), (d.getHours() + 24) % 12 || 12, d.getMinutes() + 1,)
+
+                    fetch(`https://spreadora2.herokuapp.com/api/posts/${this.props.route.params.selectedID}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Authorization': `Bearer ${this.state.jwt}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            "data": {
+                                "description": this.state.desc,
+                                "imageURL": this.props.route.params.selectedURL,
+                                "date": d.toLocaleDateString(),
+                                "username": this.state.username,
+                                "latitude": info.coords.latitude,
+                                "longitude": info.coords.longitude,
+                                "profileURL": this.state.url,
+                                "hour": d.toLocaleString('en-US', { hour: 'numeric', hour12: true }),
+                                "minute": d.getMinutes()
+                            }
+
+                        })
+                    })
+
+                        .then((res) => {
+                            alert('Image posted successfully')
+                            console.log("Post datas added", res)
+                            this.setState({ path: '' })
+                            this.textInput.clear();
+                            this.setState({ disabledPost: false, enabledPost: true })
+                            this.props.navigation.goBack();
+
+                        })
+                        .catch((e) => {
+                            console.log(e)
+                            this.setState({ disabledPost: false, enabledPost: true })
+
+                        })
+
+
+
+
+                }, error => {
+                    alert('Error', JSON.stringify(error))
+                    this.setState({ disabledPost: false, enabledPost: true })
+
+                },
+                    { enableHighAccuracy: false, timeout: 5000, maximumAge: 10000 })
+
+
             }
         }
 
@@ -242,14 +266,14 @@ export default class Post extends Component {
 
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 10 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+                         <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
                             <Ionicons
                                 name="close-outline"
                                 size={35}
                                 color="#000"
-                            />
+                            /> 
                         </TouchableOpacity>
-                        <Text style={styles.newPost}>New Post</Text>
+                        <Text style={styles.newPost}>Edit Post</Text>
                     </View>
                     <View>{this.state.enabledPost &&
                         <TouchableOpacity onPress={() => makePost()} style={styles.postButton}>
@@ -272,17 +296,17 @@ export default class Post extends Component {
                 </View>
                 <View style={{ top: 10, justifyContent: 'center', alignItems: 'center' }}>
                     <TouchableOpacity onPress={() => this.addImage()} style={styles.addButton}>
-                        <AntDesign
-                            name="plus"
-                            size={20}
-                            color="#000"
+                        <Entypo
+                            name="edit"
+                            size={25}
+                            style={{ right: 5 }}
                         />
-                        <Text style={{ color: '#0a79ed', fontSize: 17, fontWeight: '700' }}>Add</Text>
+                        <Text style={{ color: '#0a79ed', fontSize: 17, fontWeight: '700' }}> Edit</Text>
                     </TouchableOpacity>
                     <View style={styles.uplaodedImage}>
 
                         <Image
-                            source={{ uri: this.state.path == '' ? 'https://socialistmodernism.com/wp-content/uploads/2017/07/placeholder-image.png?w=640' : this.state.path }}
+                            source={{ uri: this.state.path == '' ? "https://spreadora2.herokuapp.com" + this.props.route.params.selectedURL : this.state.path }}
                             style={{ width: 300, height: 190 }}
                         />
                     </View>
@@ -297,33 +321,11 @@ export default class Post extends Component {
                         numberOfLines={3}
                         maxHeight={350}
                         maxLength={300}
-                        defaultValue={this.state.desc}
+                        defaultValue={this.props.route.params.selectedDesc}
                         ref={input => { this.textInput = input }}
                         onChangeText={(e) => this.setState({ desc: e })}
                     />
                 </View>
-
-                <TouchableOpacity
-                    style={{
-                        width: 100,
-                        height: 30,
-                        borderRadius: 30,
-                        backgroundColor: '#fff',
-                        position: 'absolute',
-                        bottom: 10,
-                        right: 10,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        backgroundColor: ' rgba(0, 122, 255, 0.1)',
-                    }}
-                    onPress={() => saveAsDraft()}
-                >
-
-                    <Text style={{
-                        color: '#007AFF'
-                    }}>Save as draft</Text>
-
-                </TouchableOpacity>
 
             </View>
         );

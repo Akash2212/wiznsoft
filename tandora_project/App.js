@@ -38,7 +38,8 @@ import ResetPassw from "./screens/ResetPassw";
 import ForgotPassword from "./screens/ForgotPassword";
 import ViewPhoto from "./screens/ViewPhoto";
 import MyPosts from "./screens/MyPosts";
-import Nearby from './screens/Nearyby'
+import Nearby from './screens/Nearyby';
+import EditPost from './screens/EditPost';
 
 const SPLASH_SCREEN = "Splash";
 const MAIN_SCREEN = "MainScreen";
@@ -123,10 +124,11 @@ export default class App extends Component{
         <Stack.Screen name="ResetPassw" component={ResetPassw}/>
         <Stack.Screen name="Register" component={Register}/>
         <Stack.Screen name="HomeScreen" component={HomeScreen}/>
+        <Stack.Screen name="Post" component={Post}/>
+        <Stack.Screen name="EditPost" component={EditPost}/>
         <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
         <Stack.Screen name="Nearby" component={Nearby}/>
         <Stack.Screen name="MyPosts" component={MyPosts}/>
-        <Stack.Screen name="Post" component={Post}/>
         <Stack.Screen name="Trending" component={Trending}/>
         <Stack.Screen name="ViewPhoto" component={ViewPhoto}/>
         </Stack.Navigator>
@@ -138,6 +140,8 @@ export default class App extends Component{
         <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="HomeScreen" component={HomeScreen}/>
+          <Stack.Screen name="EditPost" component={EditPost}/>
+          <Stack.Screen name="Post" component={Post}/>
           <Stack.Screen name="Trending" component={Trending}/>
           <Stack.Screen name="Login" component={Login}/>
           <Stack.Screen name="ForgotPassword" component={ForgotPassword}/>

@@ -82,16 +82,6 @@ export default class HomeScreen extends Component {
         initialRouteName='Login'
         activeColor="#2ca7e0"
         barStyle={{ backgroundColor: '#fff' }}> 
-        <Tab.Screen
-          name="Location"
-          component={Post}
-          options={{
-            tabBarLabel: 'Add Posts',
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons name="publish" color={color} size={26} />
-            ),
-          }}
-        />
 
         <Tab.Screen
           name='Nearby'
