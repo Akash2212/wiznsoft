@@ -46,9 +46,9 @@
           <action android:name="android.intent.action.VIEW" />
           <category android:name="android.intent.category.DEFAULT" />
           <category android:name="android.intent.category.BROWSABLE" />
-          <data android:scheme="tandora" />
-          <data android:scheme="https" android:host="tandora.herokuapp.com" />
-          <data android:scheme="http" android:host="tandora.herokuapp.com" />
+          <data android:scheme="spreadora2" />
+          <data android:scheme="https" android:host="spreadora2.herokuapp.com" />
+          <data android:scheme="http" android:host="spreadora2.herokuapp.com" />
         </intent-filter>
       </activity>
     </application>

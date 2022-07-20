@@ -231,7 +231,7 @@ export default class ProfileScreen extends Component {
                                     console.log("Profile uploaded successfully", res)
                                     alert('Profile uploaded successfully')
                                     this.setState({ edit: false, profile: true });
-                                    this.setState({url: "https://spreadora2.herokuapp.com" + response[0].url})
+                                    this.setState({ url: "https://spreadora2.herokuapp.com" + response[0].url })
                                     this.setState({ buttonFade: false, button: true });
 
 
@@ -269,7 +269,7 @@ export default class ProfileScreen extends Component {
                                     .catch((e) => {
                                         console.log(e)
                                         this.setState({ buttonFade: false, button: true });
-                                        this.setState({url: "https://spreadora2.herokuapp.com" + response[0].url})
+                                        this.setState({ url: "https://spreadora2.herokuapp.com" + response[0].url })
                                     })
                             }
                         }
@@ -292,20 +292,16 @@ export default class ProfileScreen extends Component {
             console.log("In sign")
             try {
 
+                var googleSignedIn = false
+                var fbSignedIn = false
+
+
 
                 GoogleSignin.getTokens().then((res) => {
                     if (res.accessToken != null) {
-                        console.log("Google signout")
-                        GoogleSignin.signOut().then(() => {
-                            AsyncStorage.removeItem('user')
-                                .then(() => this.props.navigation.replace('Login'));
-                        })
+                        googleSignedIn = true
                     }
-                    else {
-                        AsyncStorage.removeItem('user')
-                            .then(() => this.props.navigation.replace('Login'));
-                        console.log('Sign out')
-                    }
+
 
                 })
                     .catch((e) => console.log(e))
@@ -317,18 +313,31 @@ export default class ProfileScreen extends Component {
                         if (current) {
                             console.log(current.userID);
                             if (!isEmpty(current.userID)) {
-                                LoginManager.logOut();
-                                AsyncStorage.removeItem('user')
-                                    .then(() => this.props.navigation.replace('Login'));
+                                fbSignedIn = true
                             }
-                            else {
-                                AsyncStorage.removeItem('user')
-                                    .then(() => { this.props.navigation.replace('Login') });
-                                console.log('Sign out')
-                            }
+
                         }
                     }
                 );
+
+                if (googleSignedIn) {
+                    console.log("Google signout")
+                    GoogleSignin.signOut().then(() => {
+                        AsyncStorage.removeItem('user')
+                            .then(() => this.props.navigation.replace('Login'));
+                    })
+                }
+
+                else if (fbSignedIn) {
+                    LoginManager.logOut();
+                    AsyncStorage.removeItem('user')
+                        .then(() => this.props.navigation.replace('Login'));
+                }
+
+                else {
+                    AsyncStorage.removeItem('user')
+                        .then(() => this.props.navigation.replace('Login'));
+                }
 
 
 
@@ -415,7 +424,7 @@ export default class ProfileScreen extends Component {
                         console.log("Profile photo removed successfully", res)
                         alert('Profile photo removed successfully')
                         this.setState({ edit: false, profile: true });
-                        this.setState({url: ''})
+                        this.setState({ url: '' })
                     })
                     .catch((e) => {
                         console.log(e)
@@ -473,7 +482,7 @@ export default class ProfileScreen extends Component {
                                     source={this.state.url == '' ? require('../Images/user_placeholder.png') : { uri: this.state.url }}
                                     style={{ borderRadius: 30, width: 60, height: 60, resizeMode: 'contain' }}
                                 />
-                                <TouchableOpacity onPress={() => this.setState({profileModal: true})} style={{ width: 30, height: 30, bottom: 20, left: 40, borderRadius: 25, backgroundColor: '#afcddb', justifyContent: 'center', alignItems: 'center' }}>
+                                <TouchableOpacity onPress={() => this.setState({ profileModal: true })} style={{ width: 30, height: 30, bottom: 20, left: 40, borderRadius: 25, backgroundColor: '#afcddb', justifyContent: 'center', alignItems: 'center' }}>
                                     <Entypo
                                         name="camera"
                                         size={20}
@@ -556,7 +565,7 @@ export default class ProfileScreen extends Component {
                             onClosed={() => this.setState({ profileModal: false })}
                         >
                             <View style={styles.content}>
-                                <TouchableOpacity onPress={() => this.setState({edit: true, profile: false}) } style={{ flexDirection: 'row' }} >
+                                <TouchableOpacity onPress={() => this.setState({ edit: true, profile: false })} style={{ flexDirection: 'row' }} >
                                     <Entypo
                                         name="edit"
                                         size={25}
@@ -599,7 +608,7 @@ export default class ProfileScreen extends Component {
                         </View>
                         <View style={{ justifyContent: 'center', alignItems: 'center', top: 100 }}>
                             <Image
-                                source={this.state.path == '' ? {uri: this.state.url} : { uri: this.state.path }}
+                                source={this.state.path == '' ? { uri: this.state.url } : { uri: this.state.path }}
                                 style={{ borderRadius: 30, width: 100, height: 100 }}
                             />
                             <TouchableOpacity onPress={() => this.addImage()} style={{ width: 30, height: 30, bottom: 20, left: 40, borderRadius: 25, backgroundColor: '#afcddb', justifyContent: 'center', alignItems: 'center' }}>
