@@ -245,6 +245,46 @@ export default class ProfileScreen extends Component {
 
                         else {
                             if (this.state.id != null) {
+
+
+                                axios.get('https://spreadora2.herokuapp.com/api/posts', {
+                                    headers: {
+                                        'Authorization': `Bearer ${this.state.jwt}`,
+
+                                    }
+                                })
+                                    .then((r) => {
+                                        console.log("Changing posts url " + r)
+                                      
+
+                                        for (var i = 0; i < r.data.data.length; i++) {
+                                            if (r.data.data[i].attributes.username == this.state.username) {
+                                                console.log(r.data.data[i].id)
+                                                fetch(`https://spreadora2.herokuapp.com/api/posts/${r.data.data[i].id}`, {
+                                                    method: 'PUT',
+                                                    headers: {
+                                                        'Authorization': `Bearer ${this.state.jwt}`,
+                                                        'Content-Type': 'application/json'
+                                                    },
+                                                    body: JSON.stringify({
+                                                        "data": {
+                                                            "profileURL": "https://spreadora2.herokuapp.com" + response[0].url,
+                                                        }
+
+                                                    })
+
+                                                })
+                                                    .then((r) => console.log("Updated profile url " + r))
+                                                    .catch((e) => console.log("Updating profile url error "+e))
+                                            }
+                                        }
+                                    })
+                                    .catch((e) => console.log("Error in fetch"+e))
+
+
+
+
+
                                 fetch(`https://spreadora2.herokuapp.com/api/profiles/${this.state.id}`, {
                                     method: 'PUT',
                                     headers: {

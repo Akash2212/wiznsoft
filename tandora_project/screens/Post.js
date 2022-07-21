@@ -53,7 +53,10 @@ export default class Post extends Component {
 
                 let draft = await AsyncStorage.getItem('DraftedPost');
                 let draftedPost = JSON.parse(draft);
-                this.setState({path: draftedPost.imagePath, desc: draftedPost.desc})
+                if(draftedPost != null) {
+                    this.setState({path: draftedPost.imagePath, desc: draftedPost.desc})
+                }
+
 
 
                 await axios.get('https://spreadora2.herokuapp.com/api/profiles', {
@@ -62,9 +65,11 @@ export default class Post extends Component {
                     },
                 })
                     .then((res) => {
+                        console.log(res.data)
                         if (res.data.data.length != 0) {
                             for (var i = 0; i < res.data.data.length; i++) {
                                 if (res.data.data[i].attributes.username == user.username) {
+                                    console.log(user.username)
                                     this.setState({ url: res.data.data[i].attributes.url })
                                 }
                             }
@@ -173,9 +178,21 @@ export default class Post extends Component {
                         Geolocation.getCurrentPosition((info) => {
                             console.log(info.coords.latitude, info.coords.longitude)
 
+                            const formatAMPM = (date) => {
+                                var hours = date.getHours();
+                                var minutes = date.getMinutes();
+                                var ampm = hours >= 12 ? 'pm' : 'am';
+                                hours = hours % 12;
+                                hours = hours ? hours : 12; // the hour '0' should be '12'
+                                minutes = minutes < 10 ? '0'+minutes : minutes;
+                                var strTime = hours + ':' + minutes + ' ' + ampm;
+                                return strTime;
+                              }
+                              
+                              console.log(formatAMPM(new Date));
+
 
                             const d = new Date();
-                            console.log(d.toLocaleDateString(), (d.getHours() + 24) % 12 || 12, d.getMinutes() + 1,)
 
                             fetch('https://spreadora2.herokuapp.com/api/posts', {
                                 method: 'POST',
@@ -192,7 +209,7 @@ export default class Post extends Component {
                                         "latitude": info.coords.latitude,
                                         "longitude": info.coords.longitude,
                                         "profileURL": this.state.url,
-                                        "hour": d.toLocaleString('en-US', { hour: 'numeric', hour12: true }),
+                                        "hour": formatAMPM(new Date),
                                         "minute": d.getMinutes()
                                     }
 

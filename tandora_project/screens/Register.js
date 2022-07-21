@@ -4,6 +4,8 @@ import axios from 'axios'
 import AsyncStorage from "@react-native-community/async-storage";
 import ScrollPicker from 'react-native-wheel-scroll-picker';
 import Modal from "react-native-modalbox";
+import DropDownPicker from 'react-native-dropdown-picker';
+
 
 const { width, height } = Dimensions.get("window");
 
@@ -23,6 +25,7 @@ export default class Register extends Component {
             maleButtonColor: '#841584',
             femaleButtonColor: '#C0C0C0',
             modalVisible: false,
+            country: 'uk'
         };
     }
 
@@ -46,7 +49,8 @@ export default class Register extends Component {
                     }
                   
                 }; 
-        */
+                */
+
 
         const _storeData = async (token, emailID, name) => {
             try {
@@ -176,16 +180,22 @@ export default class Register extends Component {
                         </View>
                     </View> 
                     <Text style={{top: 80}}>OR</Text>
-                    */}
+        */}
                 </View>
                 <View style={{ top: 120, left: 30 }}>
 
+                    <TextInput
+                        placeholder="Enter gender"
+                        style={styles.gender}
+                        onChangeText={(u) => this.setState({ gender: u })}
+                    />
 
-                    <TouchableOpacity onPress={() => this.setState({ modalVisible: true })} style={styles.yob}>
-                        <Text style={{
-                            color: '#000',
-                        }}>Select YOB</Text>
-                    </TouchableOpacity>
+                    <TextInput
+                        placeholder="Enter YOB"
+                        style={styles.yob}
+                        keyboardType='number-pad'
+                        onChangeText={(u) => this.setState({ yob: u })}
+                    />
 
                     <TextInput
                         placeholder="Enter username"
@@ -218,39 +228,6 @@ export default class Register extends Component {
                     }
 
                 </View>
-                <Modal
-                    entry="bottom"
-                    backdropPressToClose={true}
-                    isOpen={this.state.modalVisible}
-                    style={styles.modalBox}
-                    onClosed={() => this.setState({ modalVisible: false })}
-                >
-                    <View style={styles.content}>
-                        <ScrollPicker
-                            dataSource={[
-                                'a',
-                                'b',
-                                'c',
-                                'd',
-                            ]}
-                            selectedIndex={1}
-                            renderItem={(data, index, isSelected) => {
-                                //
-                            }}
-                            onValueChange={(data, selectedIndex) => {
-                                //
-                            }}
-                            wrapperHeight={180}
-                            wrapperWidth={150}
-                            wrapperBackground={'#FFFFFF'}
-                            itemHeight={60}
-                            highlightColor={'#d8d8d8'}
-                            highlightBorderWidth={2}
-                            activeItemColor={'#222121'}
-                            itemColor={'#B4B4B4'}
-                        />
-                    </View>
-                </Modal>
             </View>
         )
     }
@@ -312,10 +289,17 @@ const styles = StyleSheet.create({
         fontWeight: '700'
     },
     yob: {
-        borderWidth: 2,
-        borderColor: '#000',
+        color: '#000',
         width: '80%',
-        padding: 10,
+        backgroundColor: '#d6d6d4',
+        top: 10,
+        borderRadius: 10
+    },
+    gender: {
+        color: '#000',
+        width: '80%',
+        backgroundColor: '#d6d6d4',
+        top: 0,
         borderRadius: 10
     },
     modalBox: {
@@ -330,7 +314,7 @@ const styles = StyleSheet.create({
         position: "absolute",
         bottom: 0,
         width,
-        height: 450,
+        height: 250,
         borderTopLeftRadius: 20,
         justifyContent: "center",
         alignItems: "center",

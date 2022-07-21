@@ -65,6 +65,17 @@ export default class App extends React.Component {
 
     render() {
 
+        const formatAMPM = (date) => {
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var ampm = hours >= 12 ? 'pm' : 'am';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            var strTime = hours + ':' + minutes + ' ' + ampm;
+            return strTime;
+        }
+
 
         const TimeComponent = (hour, minute) => {
 
@@ -157,14 +168,34 @@ export default class App extends React.Component {
 
                                         <>
                                             <>
-                                                {item.hour.slice(-2) == "AM" &&
-                                                    <Text>{(parseInt(item.hour.substring(0, 2).trim())) + 12 - (((new Date().getHours() + 24) % 12 || 12))}  hrs ago</Text>}
-                                            </>
-                                            <>
-                                                {item.hour.slice(-2) == "PM" &&
-                                                    <Text>{(((new Date().getHours() + 24) % 12 || 12) - parseInt(item.hour.substring(0, 2).trim()))} hrs ago</Text>
+                                                {item.hour.slice(-2) == formatAMPM(new Date()).slice(-2) ?
+
+                                                    <>
+                                                        {
+                                                            item.hour.slice(0, 2) == formatAMPM(new Date()).slice(0, 2) ?
+                                                            <>
+                                                                
+                                                            <Text>{(parseInt(item.hour.substring(3, 5).trim())) - parseInt(formatAMPM(new Date()).slice(3,5)) < 0 ? (parseInt(formatAMPM(new Date()).slice(3,5) - parseInt(item.hour.substring(3, 5).trim()))) : (parseInt(item.hour.substring(3, 5).trim())) - parseInt(formatAMPM(new Date()).slice(3,5))}  mins ago</Text>
+                                                            </>
+                                                            : 
+                                                            <>
+                                                                <Text>{(parseInt(item.hour.substring(0,2).trim())) - parseInt(formatAMPM(new Date()).slice(0,2)) < 0 ? (parseInt(formatAMPM(new Date()).slice(0,2)) - parseInt(item.hour.substring(0,2).trim())) : (parseInt(item.hour.substring(0,2).trim())) - parseInt(formatAMPM(new Date()).slice(0,2))}  hrs ago</Text>
+
+                                                            </>
+                                                                   
+                                                                
+                                                        }
+
+                                                    </>
+                                                    :
+                                                    <> 
+                                                        
+                                                                
+                                                            <Text>{(parseInt(item.hour.substring(0,2).trim())) + 12 - parseInt(formatAMPM(new Date()).slice(0,2)) < 0 ? (parseInt(formatAMPM(new Date()).slice(0,2) - parseInt(item.hour.substring(0,2).trim())) + 12) : (parseInt(item.hour.substring(0,2).trim())) + 12 - parseInt(formatAMPM(new Date()).slice(0,2))}  mins ago</Text>
+                                                    </>
                                                 }
                                             </>
+                                           
                                         </>
 
                                         : <Text>{item.date}</Text>
@@ -229,7 +260,7 @@ export default class App extends React.Component {
                     <Image
                         source={require('../Images/logo.jpeg')}
                         style={{
-                            width: 50, height: 50, borderRadius: 30,left:5,top:5
+                            width: 50, height: 50, borderRadius: 30, left: 5, top: 5
                         }}
 
                     />

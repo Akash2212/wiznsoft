@@ -221,12 +221,7 @@ const login = async () => {
                     <View style={{flexDirection:'row'}}><Text style={{top:20,fontSize:18}}>Don't have an account? </Text><TouchableOpacity onPress={() => this.props.navigation.navigate('Register')}><Text style={{color:'#007aff',top:20,fontSize:18}}>Signup</Text></TouchableOpacity></View>
                     <View style={{top: 40,flexDirection:'column'}}>
 
-                    {/* <View style={{flexDirection:'row',alignItems:'center'}}>
-                            <Image source={require('../Images/googleLogo.png')} style={{width: 30,height:30}}/>
-                            <Text style={{left: 20,fontSize:18}}>Sign in with Google</Text>
-                    </View> */}
-
-                    <Button title={'Sign in with Google'} onPress={() =>  {
+                    <TouchableOpacity onPress={() =>  {
                             GoogleSignin.configure({
                                 androidClientId: '1087775513299-c4dkatotebardsr54r3qkflbh821ubp1.apps.googleusercontent.com',
                                 
@@ -246,13 +241,15 @@ const login = async () => {
                         }).catch((e) => {
                             console.log("ERROR IS: " + JSON.stringify(e));
                         })
-                        }} />
+                        }} style={{flexDirection:'row',alignItems:'center'}}>
+                            <Image source={require('../Images/googleLogo.png')} style={{width: 30,height:30}}/>
+                            <Text style={{left: 10,fontSize:18}}>Sign in with Google</Text>
+                    </TouchableOpacity> 
 
                         
                 <View style={{top:20,width:30}}>
 
                     <LoginButton
-                    
                     onLoginFinished={
                     (error, result) => {
                     if (error) {
