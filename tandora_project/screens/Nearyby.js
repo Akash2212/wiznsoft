@@ -7,6 +7,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import Feather from 'react-native-vector-icons/Feather'
 import Entypo from 'react-native-vector-icons/Entypo'
 import Geolocation from '@react-native-community/geolocation';
+import moment from 'moment'
+import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
+
 
 export default class App extends React.Component {
     constructor(props) {
@@ -15,6 +18,7 @@ export default class App extends React.Component {
             expanded: false,
             fruitLIst: false,
             enabled: true,
+            enablelocationLayout: true,
         };
     }
 
@@ -27,14 +31,14 @@ export default class App extends React.Component {
 
 
 
-
-        Geolocation.getCurrentPosition((info) => {
-            console.log(info)
-            this.setState({ latitude: info.coords.latitude, longitude: info.coords.longitude });
-            getNearbyPosts()
-        })
-
         const getNearbyPosts = async () => {
+            Geolocation.getCurrentPosition((info) => {
+                this.setState({ enablelocationLayout: false })
+                this.setState({ latitude: info.coords.latitude, longitude: info.coords.longitude });
+            })
+
+
+
             console.log(this.state.latitude)
             let usrdata = await AsyncStorage.getItem('user');
             let user = JSON.parse(usrdata);
@@ -57,6 +61,23 @@ export default class App extends React.Component {
             }
         }
 
+        Geolocation.getCurrentPosition((info) => {
+            console.log(info)
+            getNearbyPosts()
+            this.setState({ enablelocationLayout: false });
+
+
+        })
+
+
+
+
+
+
+
+
+
+
     }
 
     FlatListItemSeparator = () => {
@@ -65,34 +86,14 @@ export default class App extends React.Component {
 
     render() {
 
-        const formatAMPM = (date) => {
-            var hours = date.getHours();
-            var minutes = date.getMinutes();
-            var ampm = hours >= 12 ? 'pm' : 'am';
-            hours = hours % 12;
-            hours = hours ? hours : 12; // the hour '0' should be '12'
-            minutes = minutes < 10 ? '0' + minutes : minutes;
-            var strTime = hours + ':' + minutes + ' ' + ampm;
-            return strTime;
-        }
 
 
-        const TimeComponent = (hour, minute) => {
 
-            console.log("This is " + minute)
+        const TimeComponent = (time) => {
 
-            var min;
-            if ((minute - new Date().getMinutes()) < 0) {
-                min = (new Date().getMinutes() - minute);
-            }
+            console.log(time)
+            return moment(new Date(time.time)).fromNow();
 
-            else {
-                min = (minute - new Date().getMinutes());
-            }
-
-            return (
-                <Text> {min}  mins ago</Text>
-            )
         }
 
 
@@ -105,6 +106,21 @@ export default class App extends React.Component {
                 <View style={{ height: 50, backgroundColor: '#fff', width: '100%', alignItems: 'center', justifyContent: "center" }}>
                     <Text style={{ color: '#2ca7e0', fontWeight: '800', fontSize: 23 }}>Nearby Posts</Text>
                 </View>
+
+
+                {this.state.enablelocationLayout &&
+                    <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', top: 300 }}>
+
+                        <Entypo
+                            name="location-pin"
+                            size={55}
+                            color="#2ca7e0"
+                        />
+
+                        <Text>Enable location to see nearby posts</Text>
+
+                    </View>
+                }
 
 
 
@@ -124,13 +140,13 @@ export default class App extends React.Component {
                             <View style={{ paddingBottom: 20 }}>
 
                                 <View style={{ flexDirection: 'row', padding: 20, alignItems: 'center' }}>
-                                    <Image source={item.url != "" ? { uri: item.profileURL } : require('../Images/user_placeholder.png')} style={{ width: 40, height: 40, borderRadius: 15 }} />
+                                    <Image source={item.url != '' ? { uri: item.profileURL } : require('../Images/user_placeholder.png')} style={{ width: 40, height: 40, borderRadius: 15 }} />
                                     <View style={{ left: 20 }}>
                                         <Text style={styles.user_name}>{item.username}</Text>
                                     </View>
                                 </View>
                                 <View style={{ alignItems: 'center', top: 10, justifyContent: 'center', width: Dimensions.get('window').width }}>
-                                    <ImageBackground source={{ uri: "https://spreadora2.herokuapp.com" + item.imageURL }} style={{ width: '95%', height: 250 }} imageStyle={{ borderRadius: 14 }}>
+                                    <ImageBackground source={{ uri: item.imageURL }} style={{ width: '95%', height: 250 }} imageStyle={{ borderRadius: 14 }}>
 
                                         <LinearGradient
                                             colors={['rgba(0,0,0,0)', 'rgba(0,0,0,1)']}
@@ -163,7 +179,9 @@ export default class App extends React.Component {
                                     />
                                     <Text>{item.distance} kms aways    </Text>
 
+                                    <Text>{<TimeComponent time={item.updatedAt} />}</Text>
 
+                                    {/* 
                                     {item.date == new Date().toLocaleDateString() ?
 
                                         <>
@@ -188,10 +206,8 @@ export default class App extends React.Component {
 
                                                     </>
                                                     :
-                                                    <> 
-                                                        
-                                                                
-                                                            <Text>{(parseInt(item.hour.substring(0,2).trim())) + 12 - parseInt(formatAMPM(new Date()).slice(0,2)) < 0 ? (parseInt(formatAMPM(new Date()).slice(0,2) - parseInt(item.hour.substring(0,2).trim())) + 12) : (parseInt(item.hour.substring(0,2).trim())) + 12 - parseInt(formatAMPM(new Date()).slice(0,2))}  mins ago</Text>
+                                                    <>                                                                 
+                                                        <Text>{(parseInt(item.hour.substring(0,2).trim())) + 12 - parseInt(formatAMPM(new Date()).slice(0,2)) < 0 ? (parseInt(formatAMPM(new Date()).slice(0,2) - parseInt(item.hour.substring(0,2).trim())) + 12) : (parseInt(item.hour.substring(0,2).trim())) + 12 - parseInt(formatAMPM(new Date()).slice(0,2))}  mins ago</Text>
                                                     </>
                                                 }
                                             </>
@@ -202,7 +218,7 @@ export default class App extends React.Component {
 
 
                                     }
-
+ */}
 
 
 

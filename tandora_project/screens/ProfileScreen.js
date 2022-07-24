@@ -268,7 +268,7 @@ export default class ProfileScreen extends Component {
                                                     },
                                                     body: JSON.stringify({
                                                         "data": {
-                                                            "profileURL": "https://spreadora2.herokuapp.com" + response[0].url,
+                                                            "profileURL": response[0].url,
                                                         }
 
                                                     })
@@ -294,7 +294,7 @@ export default class ProfileScreen extends Component {
                                     body: JSON.stringify({
                                         "data": {
                                             "username": this.state.username,
-                                            "url": "https://spreadora2.herokuapp.com" + response[0].url,
+                                            "url": response[0].url,
                                         }
 
                                     })
@@ -309,7 +309,7 @@ export default class ProfileScreen extends Component {
                                     .catch((e) => {
                                         console.log(e)
                                         this.setState({ buttonFade: false, button: true });
-                                        this.setState({ url: "https://spreadora2.herokuapp.com" + response[0].url })
+                                        this.setState({ url: response[0].url })
                                     })
                             }
                         }
@@ -397,7 +397,7 @@ export default class ProfileScreen extends Component {
             <View style={{ padding: 5 }}>
                 <TouchableOpacity onLongPress={() => this.setState({ modalVisible: true, selectedID: id, selectedURL: url, selectedDesc: desc })}>
                     <Image
-                        source={{ uri: "https://spreadora2.herokuapp.com" + url }}
+                        source={{ uri: url }}
                         style={{ width: Dimensions.get('window').width, height: 200, resizeMode: 'contain' }}
                     />
                 </TouchableOpacity>

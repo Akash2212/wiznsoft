@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Alert, Modal, TouchableHighlight } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, TextInput, Alert, Modal, TouchableHighlight, PermissionsAndroid } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import AsyncStorage from "@react-native-community/async-storage";
@@ -7,6 +7,7 @@ import ImagePicker from 'react-native-image-crop-picker';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import Geolocation from '@react-native-community/geolocation';
 import axios from 'axios';
+import RNAndroidLocationEnabler from 'react-native-android-location-enabler';
 import { NavigationEvents } from 'react-navigation';
 
 
@@ -53,8 +54,8 @@ export default class Post extends Component {
 
                 let draft = await AsyncStorage.getItem('DraftedPost');
                 let draftedPost = JSON.parse(draft);
-                if(draftedPost != null) {
-                    this.setState({path: draftedPost.imagePath, desc: draftedPost.desc})
+                if (draftedPost != null) {
+                    this.setState({ path: draftedPost.imagePath, desc: draftedPost.desc })
                 }
 
 
@@ -96,7 +97,7 @@ export default class Post extends Component {
         this.setState({ modalVisible: visible });
     }
 
-    
+
 
 
     render() {
@@ -105,25 +106,27 @@ export default class Post extends Component {
         const saveAsDraft = async () => {
             console.log("in save");
 
-            if(this.state.path != '' && this.state.desc != '') {
+            if (this.state.path != '' && this.state.desc != '') {
                 try {
                     let draftedPostCredentials = {
                         imagePath: this.state.path,
                         desc: this.state.desc
                     }
-                    await AsyncStorage.setItem('DraftedPost',JSON.stringify(draftedPostCredentials))
-                    .then(() => alert('Post saved as draft'))
+                    await AsyncStorage.setItem('DraftedPost', JSON.stringify(draftedPostCredentials))
+                        .then(() => alert('Post saved as draft'))
 
-                    
+
                 }
-                catch(err) {
-                    alert(err)
+                catch (err) {
                     console.log(err)
                 }
-            } 
+            }
         }
 
         const makePost = async () => {
+
+
+
 
             this.setState({ disabledPost: true, enabledPost: false })
             this.setState({ enablePop: true })
@@ -175,8 +178,38 @@ export default class Post extends Component {
 
 
 
+                        const granted = PermissionsAndroid.request(
+                            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                            {
+                                'title': 'Location Permission',
+                                'message': 'This App needs access to your location ' +
+                                    'so we can know where you are.'
+                            }
+                        )
+
+
+
+                        RNAndroidLocationEnabler.promptForEnableLocationIfNeeded({
+                            interval: 10000,
+                            fastInterval: 5000,
+                        })
+                            .then((data) => {
+                                console.log(data)
+                            })
+                            .catch((err) => {
+                                console.log(err)
+                                alert("Enable location to make post")
+                                this.setState({ disabledPost: false, enabledPost: true })
+
+                            });
+
+
+
+
                         Geolocation.getCurrentPosition((info) => {
                             console.log(info.coords.latitude, info.coords.longitude)
+
+                            
 
                             const formatAMPM = (date) => {
                                 var hours = date.getHours();
@@ -184,12 +217,12 @@ export default class Post extends Component {
                                 var ampm = hours >= 12 ? 'pm' : 'am';
                                 hours = hours % 12;
                                 hours = hours ? hours : 12; // the hour '0' should be '12'
-                                minutes = minutes < 10 ? '0'+minutes : minutes;
+                                minutes = minutes < 10 ? '0' + minutes : minutes;
                                 var strTime = hours + ':' + minutes + ' ' + ampm;
                                 return strTime;
-                              }
-                              
-                              console.log(formatAMPM(new Date));
+                            }
+
+                            console.log(formatAMPM(new Date));
 
 
                             const d = new Date();
@@ -210,7 +243,7 @@ export default class Post extends Component {
                                         "longitude": info.coords.longitude,
                                         "profileURL": this.state.url,
                                         "hour": formatAMPM(new Date),
-                                        "minute": d.getMinutes()
+                                        "minute": d.getMinutes(),
                                     }
 
                                 })
@@ -240,9 +273,21 @@ export default class Post extends Component {
                         },
                             { enableHighAccuracy: false, timeout: 5000, maximumAge: 10000 })
 
+
+
+
+
+
+
+
+
+
+
                     })
                     .catch(error => {
                         console.log('error', error);
+                        alert(error)
+                        this.setState({ disabledPost: false, enabledPost: true })
                     });
             }
             else {
