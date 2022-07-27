@@ -1,112 +1,81 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import React, { Component } from "react";
+import AsyncStorage from "@react-native-community/async-storage";
+import HomeScreen from "./screens/HomeScreen";
+import Splash from "./screens/Splash";
+import Invest from "./screens/Invest";
+import Signup from "./screens/Signup";
+import Login from "./screens/Login";
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+const SPLASH_SCREEN = "splashScreen";
+const MAIN_SCREEN = "mainScreen";
+const NAVIGATION_SCREEN = "navigation";
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const Stack = createNativeStackNavigator();
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-};
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      componentToRender: SPLASH_SCREEN,
+    };
+    console.disableYellowBox = true;
+  }
 
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
+  componentDidMount() {
+    this.timeoutHandle = setTimeout(() => {
+      const isLoggedIn = async () => {
+        let data = await AsyncStorage.getItem('user');
+        let user = JSON.parse(data);
+        console.log(user)
+        if (user != null) {
+          this.setState({
+            componentToRender: MAIN_SCREEN,
+          });
+        }
+        else {
+          this.setState({
+            componentToRender: NAVIGATION_SCREEN,
+          });
+        }
+      }
+      isLoggedIn();
+    }, 1000);
+  }
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  componentWillUnmount() {
+    clearTimeout(this.timeoutHandle);
+  }
 
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
+  render() {
+    const { componentToRender } = this.state;
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+    if (componentToRender === MAIN_SCREEN) {
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="HomeScreen" component={HomeScreen} />
+          <Stack.Screen name="Invest" component={Invest} />
 
-export default App;
+        </Stack.Navigator>
+      </NavigationContainer>
+    }
+
+    if (componentToRender === NAVIGATION_SCREEN) {
+      return (
+        <NavigationContainer>
+          <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="HomeScreen" component={HomeScreen} />
+            <Stack.Screen name="Invest" component={Invest} />
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Signup" component={Signup} />
+
+
+          </Stack.Navigator>
+        </NavigationContainer>
+      );
+    }
+
+    return <Splash />;
+  }
+}
